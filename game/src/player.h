@@ -1,6 +1,7 @@
 #pragma once
 #include <raylib.h>
 #include "animation.h"
+#include "snowball.h"
 
 typedef enum {
 	PS_STAND,
@@ -22,5 +23,5 @@ typedef struct {
 }Player;
 
 void CreatePlayer(Player* player, int id);
-void UpdatePlayer(Player* player, float delta);
+int UpdatePlayer(Player* player, float delta, Snowball* sb, int nextSnowball);
 void DrawPlayer(Player* player, Vector2 moonMiddle, float moonRadius, Texture2D playerTex, float delta);

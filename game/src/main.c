@@ -17,6 +17,8 @@ int main() {
 void Init() {
 	InitWindow(GetMonitorWidth(GetCurrentMonitor()), GetMonitorHeight(GetCurrentMonitor()), "Snowball Moon");
 	InitAudioDevice();
+	SetTargetFPS(GetMonitorRefreshRate(GetCurrentMonitor()));
+	ToggleBorderlessWindowed();
 }
 
 void Deinit() {

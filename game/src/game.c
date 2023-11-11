@@ -1,8 +1,18 @@
 #include <raylib.h>
 #include "player.h"
+#include "snowball.h"
+
+#define MAX_SNOWBALLS 256
 
 void GameLoop() {
 	// Init vars
+
+	Snowball snowballs[MAX_SNOWBALLS];
+	int nextSnowball = 0;
+
+	for (int i = 0; i < MAX_SNOWBALLS; i++) {
+		snowballs[i].active = false;
+	}
 
 	float moonRadius = GetScreenHeight() / 2.f - (GetScreenHeight() * 0.1f);
 	Vector2 moonCenter = {  GetScreenWidth() / 2.f, GetScreenHeight() / 2.f };
@@ -22,8 +32,12 @@ void GameLoop() {
 	while (!WindowShouldClose()) {
 		float delta = GetFrameTime();
 
-		UpdatePlayer(&mainPlayer, delta);
-		UpdatePlayer(&secondPlayer, delta);
+		nextSnowball = UpdatePlayer(&mainPlayer, delta, snowballs, nextSnowball);
+		nextSnowball = UpdatePlayer(&secondPlayer, delta, snowballs, nextSnowball);
+
+		for (int i = 0; i < MAX_SNOWBALLS; i++) {
+			UpdateSnowball(&snowballs[i], delta);
+		}
 
 		BeginDrawing();
 
@@ -32,6 +46,10 @@ void GameLoop() {
 		DrawCircle(moonCenter.x, moonCenter.y, moonRadius, RAYWHITE);
 		DrawPlayer(&mainPlayer, moonCenter, moonRadius, playerTex, delta);
 		DrawPlayer(&secondPlayer, moonCenter, moonRadius, playerTex, delta);
+
+		for (int i = 0; i < MAX_SNOWBALLS; i++) {
+			DrawSnowball(&snowballs[i], moonCenter, moonRadius);
+		}
 
 		EndDrawing();
 	}
