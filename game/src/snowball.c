@@ -1,8 +1,8 @@
 #include "snowball.h"
 #include <raymath.h>
 
-#define SNOWBALL_SPEED 100.f
-#define STRAIGHT_GRAVITY 40.f
+#define SNOWBALL_SPEED 180.f
+#define STRAIGHT_GRAVITY 80.f
 #define SNOWBALL_RADIUS_SCALAR 0.01f 
 
 void CreateSnowballStraight(Snowball* sb, int owner, float angle, int direction) {

@@ -11,15 +11,17 @@ void CreatePlayer(Player* player, int id) {
 	player->angle = 0.f;
 	player->colour = YELLOW;
 	player->id = id;
-	player->hasSnowball = true;
+	player->hasSnowball = false;
 	player->flipped = false;
 	animation_ClearContext(&player->ctx);
 	player->state = PS_STAND;
+	player->stateTimer = 0;
 	player->score = 0;
 }
 
 int UpdatePlayer(Player* player, float delta, Snowball* sb, int nextSnowball) {
 	player->ctx.loop = true;
+	player->stateTimer += delta;
 
 	if (input_GetButton(GI_LEFT, player->id) || input_GetButton(GI_RIGHT, player->id) || input_GetButton(GI_DOWN, player->id) || input_GetButtonPressed(GI_ATTACK, player->id)) {
 		if (input_GetButton(GI_LEFT, player->id)) {
@@ -37,18 +39,31 @@ int UpdatePlayer(Player* player, float delta, Snowball* sb, int nextSnowball) {
 			player->ctx.loop = false;
 		}
 
-		if (input_GetButtonPressed(GI_ATTACK, player->id) && player->hasSnowball) {
-			CreateSnowballStraight(&sb[nextSnowball], player->id, player->angle, player->flipped ? -1 : 1);
-			nextSnowball++;
+		if (input_GetButtonPressed(GI_ATTACK, player->id)) {
 
-			if (nextSnowball >= MAX_SNOWBALLS) {
-				nextSnowball = 0;
+			if (player->state == PS_CROUCH && player->stateTimer > 0.5f) {
+				player->hasSnowball = true;
+			}
+			else if(player->hasSnowball) {
+				CreateSnowballStraight(&sb[nextSnowball], player->id, player->angle, player->flipped ? -1 : 1);
+				nextSnowball++;
+
+				if (nextSnowball >= MAX_SNOWBALLS) {
+					nextSnowball = 0;
+				}
+
+				player->hasSnowball = false;
 			}
 		}
 	}
 	else {
 		player->state = PS_STAND;		
 	}
+
+	if (player->prevState != player->state)
+		player->stateTimer = 0;
+
+	player->prevState = player->state;
 	
 	return nextSnowball;
 }

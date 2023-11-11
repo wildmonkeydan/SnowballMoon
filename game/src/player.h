@@ -14,6 +14,8 @@ typedef enum {
 typedef struct {
 	float angle;
 	PlayerState state;
+	PlayerState prevState;
+	float stateTimer;
 	Color colour;
 	bool hasSnowball;
 	bool flipped;
