@@ -4,8 +4,8 @@
 #include "input.h"
 #include "snowball.h"
 
-#define PLAYER_SPEED 30.0f
-#define PLAYER_STEP 2.f
+#define PLAYER_SPEED 25.0f
+#define PLAYER_STEP 1.5f
 #define MAX_SNOWBALLS 256
 
 #define NORM_COLLISION (Rectangle){ 0, 0, playerSize / 2, playerSize }
@@ -97,7 +97,7 @@ int UpdatePlayer(Player* player, int playerSize, float delta, Snowball* sb, int 
 		}
 
 		if (player->stateTimer >= 1.1f && player->hasSnowball) {
-			CreateSnowballStraight(&sb[nextSnowball], player->id, player->angle, player->flipped ? -1 : 1);
+			CreateSnowballStraight(&sb[nextSnowball], playerSize, player->id, player->angle, player->flipped ? -1 : 1);
 			nextSnowball++;
 
 			if (nextSnowball >= MAX_SNOWBALLS) {

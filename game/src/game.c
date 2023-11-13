@@ -25,6 +25,10 @@ void GameLoop() {
 	Texture2D moonTex = LoadTexture("Moon.png");
 	SetTextureFilter(moonTex, TEXTURE_FILTER_TRILINEAR);
 
+	Texture2D spaceTex = LoadTexture("Space.png");
+	SetTextureFilter(spaceTex, TEXTURE_FILTER_TRILINEAR);
+	SetTextureWrap(spaceTex, TEXTURE_WRAP_REPEAT);
+
 	Player players[2];
 	CreatePlayer(&players[0], playerSize, 0);
 	CreatePlayer(&players[1], playerSize, 1);
@@ -45,6 +49,8 @@ void GameLoop() {
 		BeginDrawing();
 
 		ClearBackground(BLACK);
+
+		DrawTextureRec(spaceTex, (Rectangle) { 0, 0, GetScreenWidth(), GetScreenHeight() }, (Vector2) { 0, 0 }, RAYWHITE);
 
 		DrawTexturePro(moonTex, (Rectangle) { 0, 0, moonTex.width, moonTex.height }, (Rectangle) { moonCenter.x - moonRadius, moonCenter.y - moonRadius, moonRadius * 2, moonRadius * 2 }, (Vector2) { 0, 0 }, 0.f, RAYWHITE);
 		//DrawCircle(moonCenter.x, moonCenter.y, moonRadius, RAYWHITE);

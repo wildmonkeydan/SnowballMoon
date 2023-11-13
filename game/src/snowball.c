@@ -7,12 +7,12 @@
 #define STRAIGHT_GRAVITY 160.f
 #define SNOWBALL_RADIUS_SCALAR 0.01f 
 
-void CreateSnowballStraight(Snowball* sb, int owner, float angle, int direction) {
+void CreateSnowballStraight(Snowball* sb, int playerHeight, int owner, float angle, int direction) {
 	sb->owner = owner;
 	sb->type = SPT_STRAIGHT;
 	sb->angle = angle;
 	sb->direction = direction;
-	sb->height = 90.f;
+	sb->height = playerHeight * 0.75f;
 	sb->active = true;
 }
 
