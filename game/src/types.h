@@ -1,10 +1,17 @@
 #pragma once
 #include <raylib.h>
 
+
+/// Animation Types
+
+
 typedef enum {
 	DA_PLAYERIDLE,
 	DA_PLAYERRUN,
-	DA_PLAYERCROUCH
+	DA_PLAYERCROUCH,
+	DA_THROW,
+	DA_HITFRONT,
+	DA_PICKUP
 }DefinedAnimations;
 
 typedef struct AnimContext {
@@ -18,6 +25,10 @@ typedef struct Animation {
 	unsigned char length;
 	unsigned short animLane;
 }Animation;
+
+
+/// Player Types
+
 
 typedef enum {
 	PS_STAND,
@@ -41,6 +52,10 @@ typedef struct {
 	int id;
 	AnimContext ctx;
 }Player;
+
+
+/// Snowball types
+
 
 typedef enum {
 	SPT_STRAIGHT,

@@ -1,4 +1,3 @@
-#include <raylib.h>
 #include "animation.h"
 
 // Defined Animations
@@ -6,6 +5,9 @@
 Animation playerIdle = { 6, 3, 2 };
 Animation playerRun = { 30, 14, 0 };
 Animation playerCrouch = { 24, 8, 1 };
+Animation playerThrow = { 24, 21, 3 };
+Animation playerHitFront = { 24, 18, 4 };
+Animation playerPickup = { 12, 13, 5 };
 
 Vector2 animation_AnimateDef(DefinedAnimations anim, AnimContext* ctx, float delta) {
 	Animation* ref;
@@ -19,6 +21,15 @@ Vector2 animation_AnimateDef(DefinedAnimations anim, AnimContext* ctx, float del
 		break;
 	case DA_PLAYERCROUCH:
 		ref = &playerCrouch;
+		break;
+	case DA_THROW:
+		ref = &playerThrow;
+		break;
+	case DA_HITFRONT:
+		ref = &playerHitFront;
+		break;
+	case DA_PICKUP:
+		ref = &playerPickup;
 		break;
 	default:
 		ref = &playerIdle;

@@ -1,4 +1,4 @@
 raylib-master
-_build
 _bin
+_build/obj
 .vs

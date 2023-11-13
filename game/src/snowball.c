@@ -26,7 +26,7 @@ void CreateSnowballGravity(Snowball* sb, int owner, float angle, Vector2 moonMid
 	sb->active = true;
 }
 
-void UpdateSnowball(Snowball* sb, Player* players, int numPlayers, float moonRadius, Vector2 moonMiddle, float delta) {
+void UpdateSnowball(Snowball* sb, Player* players, int numPlayers, int playerSize, float moonRadius, Vector2 moonMiddle, float delta) {
 	if (sb->active) {
 
 		if (sb->type == SPT_STRAIGHT) {
@@ -48,8 +48,8 @@ void UpdateSnowball(Snowball* sb, Player* players, int numPlayers, float moonRad
 
 				float sinRotation = sinf((players[i].angle + 90) * DEG2RAD);
 				float cosRotation = cosf((players[i].angle + 90) * DEG2RAD);
-				float dx = -32;
-				float dy = -128;
+				float dx = -playerSize / 4;
+				float dy = -playerSize;
 
 				playerCollision[0].x = x + dx * cosRotation - dy * sinRotation;
 				playerCollision[0].y = y + dx * sinRotation + dy * cosRotation;
@@ -82,6 +82,7 @@ void UpdateSnowball(Snowball* sb, Player* players, int numPlayers, float moonRad
 					}
 
 					players[i].state = PS_HIT;
+					players[i].stateTimer = 0;
 				}
 			}
 
