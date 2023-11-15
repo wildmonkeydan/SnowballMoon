@@ -5,7 +5,7 @@
 #include "snowball.h"
 
 #define PLAYER_SPEED 25.0f
-#define PLAYER_STEP 1.5f
+#define PLAYER_STEP 0.025f
 #define MAX_SNOWBALLS 256
 
 #define NORM_COLLISION (Rectangle){ 0, 0, playerSize / 2, playerSize }
@@ -92,8 +92,8 @@ int UpdatePlayer(Player* player, int playerSize, float delta, Snowball* sb, int 
 		player->collision = NO_COLLISION;
 		player->ctx.loop = false;
 
-		if (player->stateTimer >= 0.8f && player->stateTimer < 1.1f) {
-			player->angle += (PLAYER_STEP * delta) * player->flipped ? -1 : 1;
+		if (player->stateTimer >= 0.8f && player->stateTimer < 0.9f) {
+			player->angle += (PLAYER_STEP) * player->flipped ? -1 : 1;
 		}
 
 		if (player->stateTimer >= 1.1f && player->hasSnowball) {
