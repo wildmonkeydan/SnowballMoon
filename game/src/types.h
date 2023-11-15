@@ -66,8 +66,8 @@ typedef struct Player{
 	AnimContext ctx;
 }Player;
 
-#define PLAYER_COLOUR_VIOLET	CLITERAL(Color){ 68, 36, 52, 255 }
-#define PLAYER_COLOUR_NAVY		CLITERAL(Color){ 48, 52, 109, 255 }
+#define PLAYER_COLOUR_VIOLET	CLITERAL(Color){ 68, 36, 52, 255 } // Player Palette - Violet
+#define PLAYER_COLOUR_NAVY		CLITERAL(Color){ 48, 52, 109, 255 } // Player Palette - Navy
 
 
 /// Snowball types
