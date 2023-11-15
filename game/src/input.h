@@ -1,4 +1,5 @@
 #pragma once
+#include <raylib.h>
 
 typedef enum {
 	GI_LEFT,
@@ -8,6 +9,13 @@ typedef enum {
 	GI_ATTACK,
 	GI_PAUSE
 }GameInput;
+
+typedef struct {
+	KeyboardKey left;
+	KeyboardKey right;
+	KeyboardKey down;
+	KeyboardKey attack;
+}KeyboardConfig;
 
 bool input_GetButtonPressed(GameInput button, int id);
 bool input_GetButtonUp(GameInput button, int id);
