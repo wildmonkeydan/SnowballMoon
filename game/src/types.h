@@ -4,8 +4,10 @@
 
 /// Animation Types
 
-
-typedef enum {
+/// <summary>
+/// Pre-defined animations
+/// </summary>
+typedef enum DefinedAnimations{
 	DA_PLAYERIDLE,
 	DA_PLAYERRUN,
 	DA_PLAYERCROUCH,
@@ -14,12 +16,18 @@ typedef enum {
 	DA_PICKUP
 }DefinedAnimations;
 
+/// <summary>
+/// Context for animations, containing relevent data for animations
+/// </summary>
 typedef struct AnimContext {
 	unsigned char currentFrame;
 	bool loop;
 	float timer;
 }AnimContext;
 
+/// <summary>
+/// Animation definition, containing data for animation playback
+/// </summary>
 typedef struct Animation {
 	unsigned char fps;
 	unsigned char length;
@@ -29,8 +37,10 @@ typedef struct Animation {
 
 /// Player Types
 
-
-typedef enum {
+/// <summary>
+/// Enum for the player state machine
+/// </summary>
+typedef enum PlayerState{
 	PS_STAND,
 	PS_CROUCH,
 	PS_COLLECT,
@@ -39,7 +49,10 @@ typedef enum {
 	PS_HIT
 }PlayerState;
 
-typedef struct {
+/// <summary>
+/// Player data type, contains all relevant player data
+/// </summary>
+typedef struct Player{
 	float angle;
 	PlayerState state;
 	PlayerState prevState;
@@ -59,13 +72,18 @@ typedef struct {
 
 /// Snowball types
 
-
-typedef enum {
+/// <summary>
+/// Enum for snowball physics types
+/// </summary>
+typedef enum SnowballPhysicsType{
 	SPT_STRAIGHT,
 	SPT_GRAVITY
 }SnowballPhysicsType;
 
-typedef struct {
+/// <summary>
+/// Snowball data type, conatins all relevant data and type
+/// </summary>
+typedef struct Snowball{
 	bool active;
 
 	int owner;

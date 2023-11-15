@@ -7,6 +7,7 @@
 void GameLoop() {
 	// Init vars
 
+	// Snowball vars
 	Snowball snowballs[MAX_SNOWBALLS];
 	int nextSnowball = 0;
 
@@ -14,11 +15,14 @@ void GameLoop() {
 		snowballs[i].active = false;
 	}
 
+	// Moon vars
 	float moonRadius = GetScreenHeight() / 2.f - (GetScreenHeight() * 0.15f);
 	Vector2 moonCenter = {  GetScreenWidth() / 2.f, GetScreenHeight() / 2.f };
 	int moonRadiusAdjust = GetScreenWidth() / 384;
 	int playerSize = moonRadius / 5;
 
+
+	// Texture vars
 	Texture2D playerTex = LoadTexture("PlayerSprites.png");
 	SetTextureFilter(playerTex, TEXTURE_FILTER_TRILINEAR);
 
@@ -29,6 +33,8 @@ void GameLoop() {
 	SetTextureFilter(spaceTex, TEXTURE_FILTER_TRILINEAR);
 	SetTextureWrap(spaceTex, TEXTURE_WRAP_REPEAT);
 
+
+	// Player vars
 	Player players[2];
 	CreatePlayer(&players[0], playerSize, 0);
 	CreatePlayer(&players[1], playerSize, 1);
@@ -39,9 +45,11 @@ void GameLoop() {
 	while (!WindowShouldClose()) {
 		float delta = GetFrameTime();
 
+		// Update Players
 		nextSnowball = UpdatePlayer(&players[0], playerSize, delta, snowballs, nextSnowball);
 		nextSnowball = UpdatePlayer(&players[1], playerSize, delta, snowballs, nextSnowball);
 
+		// Update Snowballs
 		for (int i = 0; i < MAX_SNOWBALLS; i++) {
 			UpdateSnowball(&snowballs[i], players, 2, playerSize, moonRadius - moonRadiusAdjust, moonCenter, delta);
 		}
@@ -50,17 +58,22 @@ void GameLoop() {
 
 		ClearBackground(BLACK);
 
+		// Draw Space Background
 		DrawTextureRec(spaceTex, (Rectangle) { 0, 0, GetScreenWidth(), GetScreenHeight() }, (Vector2) { 0, 0 }, RAYWHITE);
 
+		// Draw Moon 
 		DrawTexturePro(moonTex, (Rectangle) { 0, 0, moonTex.width, moonTex.height }, (Rectangle) { moonCenter.x - moonRadius, moonCenter.y - moonRadius, moonRadius * 2, moonRadius * 2 }, (Vector2) { 0, 0 }, 0.f, RAYWHITE);
-		//DrawCircle(moonCenter.x, moonCenter.y, moonRadius, RAYWHITE);
+		
+		// Draw Players
 		DrawPlayer(&players[0], moonCenter, moonRadius - moonRadiusAdjust, playerTex, playerSize, delta);
 		DrawPlayer(&players[1], moonCenter, moonRadius - moonRadiusAdjust, playerTex, playerSize, delta);
 
+		// Draw Snowballs
 		for (int i = 0; i < MAX_SNOWBALLS; i++) {
 			DrawSnowball(&snowballs[i], moonCenter, moonRadius - moonRadiusAdjust);
 		}
 
+		// Draw Scores
 		DrawText(TextFormat("%d  %f", players[0].score, players[0].angle), 0, 0, 30, players[0].colour);
 		DrawText(TextFormat("%d  %f", players[1].score, players[1].angle), 1200, 0, 30, players[1].colour);
 
@@ -68,4 +81,6 @@ void GameLoop() {
 	}
 
 	UnloadTexture(playerTex);
+	UnloadTexture(moonTex);
+	UnloadTexture(spaceTex);
 }
