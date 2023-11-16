@@ -147,3 +147,47 @@ bool input_GetKeyConfigDown(GameInput button, int config) {
 		return IsKeyDown(keyConfig.attack);
 	}
 }
+
+
+bool input_DetectInputConfig(PlayerInputConfig* config) {
+	// Detect Gamepads
+	for (int i = 0; i < 8; i++) {
+		if (IsGamepadButtonPressed(i, GAMEPAD_BUTTON_RIGHT_FACE_DOWN)) {
+			config = i + 4;
+			return true;
+		}
+	}
+
+	// Detect Keyboard Conifgs
+	KeyboardKey key = GetKeyPressed();
+
+	KeyboardConfig kbConfig = ARROW_KEYS;
+
+	if (key == kbConfig.left || key == kbConfig.right || key == kbConfig.down || key == kbConfig.attack) {
+		config = KEY_ARROW;
+		return true;
+	}
+
+	kbConfig = WASD_KEYS;
+
+	if (key == kbConfig.left || key == kbConfig.right || key == kbConfig.down || key == kbConfig.attack) {
+		config = KEY_WASD;
+		return true;
+	}
+
+	kbConfig = IJKL_KEYS;
+
+	if (key == kbConfig.left || key == kbConfig.right || key == kbConfig.down || key == kbConfig.attack) {
+		config = KEY_IJKL;
+		return true;
+	}
+
+	kbConfig = NUMPAD_KEYS;
+
+	if (key == kbConfig.left || key == kbConfig.right || key == kbConfig.down || key == kbConfig.attack) {
+		config = KEY_NUMPAD;
+		return true;
+	}
+
+	return false;
+}

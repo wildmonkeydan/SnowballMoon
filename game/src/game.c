@@ -1,11 +1,26 @@
 #include <raylib.h>
 #include "player.h"
 #include "snowball.h"
+#include "menu.h"
 
 #define MAX_SNOWBALLS 16
 
 void GameLoop() {
 	// Init vars
+
+
+	// Texture vars
+	Texture2D playerTex = LoadTexture("PlayerSprites.png");
+	SetTextureFilter(playerTex, TEXTURE_FILTER_TRILINEAR);
+
+	Texture2D moonTex = LoadTexture("Moon.png");
+	SetTextureFilter(moonTex, TEXTURE_FILTER_TRILINEAR);
+
+	Texture2D spaceTex = LoadTexture("Space.png");
+	SetTextureFilter(spaceTex, TEXTURE_FILTER_TRILINEAR);
+	SetTextureWrap(spaceTex, TEXTURE_WRAP_REPEAT);
+
+	MenuConfig config = MenuLoop(playerTex, moonTex, spaceTex);
 
 	// Snowball vars
 	Snowball snowballs[MAX_SNOWBALLS];
@@ -21,18 +36,6 @@ void GameLoop() {
 	int moonRadiusAdjust = GetScreenWidth() / 384;
 	int playerSize = moonRadius / 5;
 	int fontSize = GetScreenHeight() / 40.f;
-
-	// Texture vars
-	Texture2D playerTex = LoadTexture("PlayerSprites.png");
-	SetTextureFilter(playerTex, TEXTURE_FILTER_TRILINEAR);
-
-	Texture2D moonTex = LoadTexture("Moon.png");
-	SetTextureFilter(moonTex, TEXTURE_FILTER_TRILINEAR);
-
-	Texture2D spaceTex = LoadTexture("Space.png");
-	SetTextureFilter(spaceTex, TEXTURE_FILTER_TRILINEAR);
-	SetTextureWrap(spaceTex, TEXTURE_WRAP_REPEAT);
-
 
 	// Player vars
 	Player players[4];

@@ -4,7 +4,7 @@
 /// <summary>
 /// Inputs for the game
 /// </summary>
-typedef enum {
+typedef enum GameInput{
 	GI_LEFT,
 	GI_RIGHT,
 	GI_UP,
@@ -14,9 +14,27 @@ typedef enum {
 }GameInput;
 
 /// <summary>
+/// Player Input Configurations
+/// </summary>
+typedef enum PlayerInputConfig {
+	KEY_ARROW,
+	KEY_WASD,
+	KEY_IJKL,
+	KEY_NUMPAD,
+	GAMEPAD_0,
+	GAMEPAD_1,
+	GAMEPAD_2,
+	GAMEPAD_3,
+	GAMEPAD_4,
+	GAMEPAD_5,
+	GAMEPAD_6,
+	GAMEPAD_7
+}PlayerInputConfig;
+
+/// <summary>
 /// Configuration for keyboard players
 /// </summary>
-typedef struct {
+typedef struct KeyboardConifg{
 	KeyboardKey left;
 	KeyboardKey right;
 	KeyboardKey down;
@@ -52,3 +70,6 @@ bool input_GetButtonUp(GameInput button, int id);
 /// True if down
 /// </returns>
 bool input_GetButton(GameInput button, int id);
+
+
+bool input_DetectInputConfig(PlayerInputConfig* config);

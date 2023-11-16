@@ -268,6 +268,7 @@
     <ClCompile Include="..\game\src\game.c" />
     <ClCompile Include="..\game\src\input.c" />
     <ClCompile Include="..\game\src\main.c" />
+    <ClCompile Include="..\game\src\menu.c" />
     <ClCompile Include="..\game\src\player.c" />
     <ClCompile Include="..\game\src\snowball.c" />
   </ItemGroup>
@@ -275,6 +276,7 @@
     <ClInclude Include="..\game\src\animation.h" />
     <ClInclude Include="..\game\src\game.h" />
     <ClInclude Include="..\game\src\input.h" />
+    <ClInclude Include="..\game\src\menu.h" />
     <ClInclude Include="..\game\src\player.h" />
     <ClInclude Include="..\game\src\snowball.h" />
     <ClInclude Include="..\game\src\types.h" />
