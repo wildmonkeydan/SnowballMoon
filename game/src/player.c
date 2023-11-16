@@ -6,7 +6,7 @@
 
 #define PLAYER_SPEED 25.0f
 #define PLAYER_STEP 0.025f
-#define MAX_SNOWBALLS 256
+#define MAX_SNOWBALLS 16
 
 #define NORM_COLLISION (Rectangle){ 0, 0, playerSize / 2, playerSize }
 #define CROUCH_COLLISION (Rectangle) { 0, playerSize * 0.75f, playerSize / 4, playerSize / 2}
@@ -89,7 +89,6 @@ int UpdatePlayer(Player* player, int playerSize, float delta, Snowball* sb, int 
 		}
 		break;
 	case PS_THROW:
-		player->collision = NO_COLLISION;
 		player->ctx.loop = false;
 
 		if (player->stateTimer >= 0.8f && player->stateTimer < 0.9f) {
@@ -97,7 +96,7 @@ int UpdatePlayer(Player* player, int playerSize, float delta, Snowball* sb, int 
 		}
 
 		if (player->stateTimer >= 1.1f && player->hasSnowball) {
-			CreateSnowballStraight(&sb[nextSnowball], playerSize, player->id, player->angle, player->flipped ? -1 : 1);
+			CreateSnowballStraight(&sb[nextSnowball], playerSize, player->id, player->angle + (player->flipped ? -5.f : 5.f), player->flipped ? -1 : 1);
 			nextSnowball++;
 
 			if (nextSnowball >= MAX_SNOWBALLS) {

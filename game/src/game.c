@@ -2,7 +2,7 @@
 #include "player.h"
 #include "snowball.h"
 
-#define MAX_SNOWBALLS 256
+#define MAX_SNOWBALLS 16
 
 void GameLoop() {
 	// Init vars
@@ -20,7 +20,7 @@ void GameLoop() {
 	Vector2 moonCenter = {  GetScreenWidth() / 2.f, GetScreenHeight() / 2.f };
 	int moonRadiusAdjust = GetScreenWidth() / 384;
 	int playerSize = moonRadius / 5;
-
+	int fontSize = GetScreenHeight() / 40.f;
 
 	// Texture vars
 	Texture2D playerTex = LoadTexture("PlayerSprites.png");
@@ -88,10 +88,10 @@ void GameLoop() {
 
 
 		// Draw Scores
-		DrawText(TextFormat("%d", players[0].score), 0, 0, 30, players[0].colour);
-		DrawText(TextFormat("%d", players[1].score), 1800, 0, 30, players[1].colour);
-		DrawText(TextFormat("%d", players[2].score), 0, 900, 30, players[2].colour);
-		DrawText(TextFormat("%d", players[3].score), 1800, 900, 30, players[3].colour);
+		DrawText(TextFormat("%d", players[0].score), 0, 0, fontSize, players[0].colour);
+		DrawText(TextFormat("%d", players[1].score), GetScreenWidth() - (fontSize * 3), 0, fontSize, players[1].colour);
+		DrawText(TextFormat("%d", players[2].score), 0, GetScreenHeight() - fontSize, fontSize, players[2].colour);
+		DrawText(TextFormat("%d", players[3].score), GetScreenWidth() - (fontSize * 3), GetScreenHeight() - fontSize, fontSize, players[3].colour);
 
 		EndDrawing();
 	}
