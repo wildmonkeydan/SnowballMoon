@@ -19,6 +19,7 @@ void Init() {
 	InitAudioDevice();
 	SetTargetFPS(GetMonitorRefreshRate(GetCurrentMonitor()));
 	ToggleBorderlessWindowed();
+	SetRandomSeed(GetTime());
 }
 
 void Deinit() {

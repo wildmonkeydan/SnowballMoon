@@ -8,4 +8,11 @@ typedef struct MenuConfig {
 	Color playerColours[8];
 }MenuConfig;
 
+typedef struct PlayerBlock {
+	bool active;
+	bool ready;
+	Color chosenColour;
+	PlayerInputConfig playerConfig;
+}PlayerBlock;
+
 MenuConfig MenuLoop(Texture2D playerTex, Texture2D moonTex, Texture2D spaceTex);
