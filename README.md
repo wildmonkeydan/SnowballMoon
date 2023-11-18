@@ -3,7 +3,8 @@ A small multiplayer game where you throw snowballs at each other on a snow-cover
 
 # Gameplay
 2-4 players run around the surface of a snow covered moon, trying to throw snowballs at each other and getting a point when they do. The player with the most points after the time limit wins. 
-Tap the attack button to throw a snowball normally or hold it down to adjust the angle to throw.
+Tap the attack button to throw a snowball normally or hold it down to adjust the angle to throw. 
+Controllers or keyboard can be used, with keyboard using either the arrow keys, WASD, IJKL, or the numpad
 
 # Building
 Double click the .sln file that was generated in the folder. From here you can use the project as normal.  
