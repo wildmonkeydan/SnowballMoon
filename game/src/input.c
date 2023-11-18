@@ -9,17 +9,17 @@
 bool input_GetButtonPressed(GameInput button, int id) {
 	bool input_GetKeyConfigPressed(GameInput button, int config);
 
-	Vector2 analog = { GetGamepadAxisMovement(id, GAMEPAD_AXIS_LEFT_X) , GetGamepadAxisMovement(id, GAMEPAD_AXIS_LEFT_Y) };
+	Vector2 analog = { GetGamepadAxisMovement(id - 4, GAMEPAD_AXIS_LEFT_X) , GetGamepadAxisMovement(id - 4, GAMEPAD_AXIS_LEFT_Y) };
 
 	switch (button) {
 	case GI_LEFT:
-		return IsGamepadButtonPressed(id, GAMEPAD_BUTTON_LEFT_FACE_LEFT) || (analog.x < -0.5f) || input_GetKeyConfigPressed(button, id);
+		return IsGamepadButtonPressed(id - 4, GAMEPAD_BUTTON_LEFT_FACE_LEFT) || (analog.x < -0.5f) || input_GetKeyConfigPressed(button, id);
 	case GI_RIGHT:
-		return IsGamepadButtonPressed(id, GAMEPAD_BUTTON_LEFT_FACE_RIGHT) || (analog.x > 0.5f) || input_GetKeyConfigPressed(button, id);
+		return IsGamepadButtonPressed(id - 4, GAMEPAD_BUTTON_LEFT_FACE_RIGHT) || (analog.x > 0.5f) || input_GetKeyConfigPressed(button, id);
 	case GI_DOWN:
-		return IsGamepadButtonPressed(id, GAMEPAD_BUTTON_LEFT_FACE_DOWN) || (analog.y > 0.5f) || input_GetKeyConfigPressed(button, id);
+		return IsGamepadButtonPressed(id - 4, GAMEPAD_BUTTON_LEFT_FACE_DOWN) || (analog.y > 0.5f) || input_GetKeyConfigPressed(button, id);
 	case GI_ATTACK:
-		return IsGamepadButtonPressed(id, GAMEPAD_BUTTON_RIGHT_FACE_DOWN) || input_GetKeyConfigPressed(button, id);
+		return IsGamepadButtonPressed(id - 4, GAMEPAD_BUTTON_RIGHT_FACE_DOWN) || input_GetKeyConfigPressed(button, id);
 	}
 }
 
@@ -28,32 +28,32 @@ bool input_GetButtonUp(GameInput button, int id) {
 
 	switch (button) {
 	case GI_LEFT:
-		return IsGamepadButtonReleased(id, GAMEPAD_BUTTON_LEFT_FACE_LEFT) || input_GetKeyConfigUp(button, id);
+		return IsGamepadButtonReleased(id - 4, GAMEPAD_BUTTON_LEFT_FACE_LEFT) || input_GetKeyConfigUp(button, id);
 	case GI_RIGHT:
-		return IsGamepadButtonReleased(id, GAMEPAD_BUTTON_LEFT_FACE_RIGHT) || input_GetKeyConfigUp(button, id);
+		return IsGamepadButtonReleased(id - 4, GAMEPAD_BUTTON_LEFT_FACE_RIGHT) || input_GetKeyConfigUp(button, id);
 	case GI_DOWN:
-		return IsGamepadButtonReleased(id, GAMEPAD_BUTTON_LEFT_FACE_DOWN) || input_GetKeyConfigUp(button, id);
+		return IsGamepadButtonReleased(id - 4, GAMEPAD_BUTTON_LEFT_FACE_DOWN) || input_GetKeyConfigUp(button, id);
 	case GI_UP:
-		return IsGamepadButtonReleased(id, GAMEPAD_BUTTON_LEFT_FACE_UP) || input_GetKeyConfigUp(button, id);
+		return IsGamepadButtonReleased(id - 4, GAMEPAD_BUTTON_LEFT_FACE_UP) || input_GetKeyConfigUp(button, id);
 	}
 }
 
 bool input_GetButton(GameInput button, int id) {
 	bool input_GetKeyConfigDown(GameInput button, int config);
 
-	Vector2 analog = { GetGamepadAxisMovement(id, GAMEPAD_AXIS_LEFT_X) , GetGamepadAxisMovement(id, GAMEPAD_AXIS_LEFT_Y) };
+	Vector2 analog = { GetGamepadAxisMovement(id - 4, GAMEPAD_AXIS_LEFT_X) , GetGamepadAxisMovement(id - 4, GAMEPAD_AXIS_LEFT_Y) };
 
 	switch (button) {
 	case GI_LEFT:
-		return IsGamepadButtonDown(id, GAMEPAD_BUTTON_LEFT_FACE_LEFT) || (analog.x < -0.5f) || input_GetKeyConfigDown(button, id);
+		return IsGamepadButtonDown(id - 4, GAMEPAD_BUTTON_LEFT_FACE_LEFT) || (analog.x < -0.5f) || input_GetKeyConfigDown(button, id);
 	case GI_RIGHT:
-		return IsGamepadButtonDown(id, GAMEPAD_BUTTON_LEFT_FACE_RIGHT) || (analog.x > 0.5f) || input_GetKeyConfigDown(button, id);
+		return IsGamepadButtonDown(id - 4, GAMEPAD_BUTTON_LEFT_FACE_RIGHT) || (analog.x > 0.5f) || input_GetKeyConfigDown(button, id);
 	case GI_DOWN:
-		return IsGamepadButtonDown(id, GAMEPAD_BUTTON_LEFT_FACE_DOWN) || (analog.y > 0.5f) || input_GetKeyConfigDown(button, id);
+		return IsGamepadButtonDown(id - 4, GAMEPAD_BUTTON_LEFT_FACE_DOWN) || (analog.y > 0.5f) || input_GetKeyConfigDown(button, id);
 	case GI_UP:
-		return IsGamepadButtonDown(id, GAMEPAD_BUTTON_LEFT_FACE_UP) || (analog.y < -0.5f) || input_GetKeyConfigDown(button, id);
+		return IsGamepadButtonDown(id - 4, GAMEPAD_BUTTON_LEFT_FACE_UP) || (analog.y < -0.5f) || input_GetKeyConfigDown(button, id);
 	case GI_ATTACK:
-		return IsGamepadButtonDown(id, GAMEPAD_BUTTON_RIGHT_FACE_DOWN) || input_GetKeyConfigDown(button, id);
+		return IsGamepadButtonDown(id - 4, GAMEPAD_BUTTON_RIGHT_FACE_DOWN) || input_GetKeyConfigDown(button, id);
 	}
 }
 
@@ -153,7 +153,7 @@ bool input_DetectInputConfig(PlayerInputConfig* config) {
 	// Detect Gamepads
 	for (int i = 0; i < 8; i++) {
 		if (IsGamepadButtonPressed(i, GAMEPAD_BUTTON_RIGHT_FACE_DOWN)) {
-			config = i + 4;
+			*config = i + 4;
 			return true;
 		}
 	}
@@ -164,28 +164,28 @@ bool input_DetectInputConfig(PlayerInputConfig* config) {
 	KeyboardConfig kbConfig = ARROW_KEYS;
 
 	if (key == kbConfig.left || key == kbConfig.right || key == kbConfig.down || key == kbConfig.attack) {
-		config = KEY_ARROW;
+		*config = KEY_ARROW;
 		return true;
 	}
 
 	kbConfig = WASD_KEYS;
 
 	if (key == kbConfig.left || key == kbConfig.right || key == kbConfig.down || key == kbConfig.attack) {
-		config = KEY_WASD;
+		*config = KEY_WASD;
 		return true;
 	}
 
 	kbConfig = IJKL_KEYS;
 
 	if (key == kbConfig.left || key == kbConfig.right || key == kbConfig.down || key == kbConfig.attack) {
-		config = KEY_IJKL;
+		*config = KEY_IJKL;
 		return true;
 	}
 
 	kbConfig = NUMPAD_KEYS;
 
 	if (key == kbConfig.left || key == kbConfig.right || key == kbConfig.down || key == kbConfig.attack) {
-		config = KEY_NUMPAD;
+		*config = KEY_NUMPAD;
 		return true;
 	}
 

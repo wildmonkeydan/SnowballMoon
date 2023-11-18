@@ -1,20 +1,27 @@
 #include "menu.h"
 #include "types.h"
+#include "animation.h"
 
 MenuConfig MenuLoop(Texture2D playerTex, Texture2D moonTex, Texture2D spaceTex) {
 	Color GetPlayerColourFromIndex(int index);
+	Color PlayerSelectColour(PlayerBlock* block);
 
 	MenuConfig config = { 0 };
 	config.numPlayers = 1;
 
 	PlayerBlock blocks[8];
 	for (int i = 0; i < 8; i++) {
+		short randColour = GetRandomValue(0, 7);
+
 		blocks[i].active = false;
-		blocks[i].chosenColour = GetPlayerColourFromIndex(GetRandomValue(0, 7));
+		blocks[i].chosenColour = GetPlayerColourFromIndex(randColour);
 		blocks[i].ready = false;
+		blocks[i].colourIndex = randColour;
 		blocks[i].playerConfig = GAMEPAD_0;
 	}
-	blocks[0].active = true;
+	AnimContext idleCtx;
+	animation_ClearContext(&idleCtx);
+	idleCtx.loop = true;
 
 	int playerBlockSize = GetScreenWidth() / 9;
 	Vector2 playerBlockOffset = { 0 , GetScreenHeight() - playerBlockSize };
@@ -33,6 +40,16 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D moonTex, Texture2D spaceTex) 
 			}
 		}
 
+		Vector2 uv = animation_AnimateDef(DA_PLAYERIDLE, &idleCtx, GetFrameTime());
+		
+		for (int i = 0; i < config.numPlayers; i++) {
+			Color change = PlayerSelectColour(&blocks[i]);
+
+			if (change.a != 0) {
+				blocks[i].chosenColour = change;
+			}
+		}
+
 		BeginDrawing();
 
 		ClearBackground(BLACK);
@@ -43,7 +60,11 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D moonTex, Texture2D spaceTex) 
 		// Draw Player Selection
 		for (int i = 0; i < config.numPlayers; i++) {
 			if (blocks[i].active) {
-				DrawRectangleRounded((Rectangle) { playerBlockOffset.x + (i * playerBlockSize), playerBlockOffset.y, playerBlockSize, playerBlockSize }, playerBlockSize / 100.f, 3, blocks[i].ready ? GREEN : GRAY);
+				int blockX = playerBlockOffset.x + (i * playerBlockSize) + ((playerBlockSize / 8) * i);
+
+				DrawTexturePro(playerTex, (Rectangle) { uv.x, uv.y, 128, 128 }, (Rectangle) { blockX, playerBlockOffset.y - playerBlockSize, playerBlockSize, playerBlockSize }, (Vector2) { 0, 0 }, 0.f, blocks[i].chosenColour);
+
+				DrawRectangleRounded((Rectangle) { blockX, playerBlockOffset.y, playerBlockSize, playerBlockSize }, playerBlockSize / 400.f, 3, blocks[i].ready ? GREEN : GRAY);
 				char controlType[16] = "Controller ";
 
 				if (blocks[i].playerConfig < 4) {
@@ -64,10 +85,10 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D moonTex, Texture2D spaceTex) 
 				}
 				else {
 					int typePos = 12;
-					TextAppend(controlType, TextFormat("%d", blocks[i].playerConfig), &typePos);
+					TextCopy(controlType, TextFormat("Controller %d", (int)blocks[i].playerConfig - 3));
 				}
 
-				DrawText(controlType, playerBlockOffset.x + (i * playerBlockSize) + playerBlockSize / 10.f, playerBlockOffset.y + playerBlockSize / 100.f, fontSize, BLACK);
+				DrawText(controlType, blockX + playerBlockSize / 10.f, playerBlockOffset.y + playerBlockSize / 50.f, fontSize, BLACK);
 			}
 		}
 
@@ -96,4 +117,27 @@ Color GetPlayerColourFromIndex(int index) {
 	case 7:
 		return PLAYER_COLOUR_VIOLET;
 	}
+}
+
+Color PlayerSelectColour(PlayerBlock* block) {
+	if (input_GetButtonPressed(GI_LEFT, block->playerConfig)) {
+		block->colourIndex--;
+
+		if (block->colourIndex < 0) {
+			block->colourIndex = 7;
+		}
+
+		return GetPlayerColourFromIndex(block->colourIndex);
+	}
+	if (input_GetButtonPressed(GI_RIGHT, block->playerConfig)) {
+		block->colourIndex++;
+
+		if (block->colourIndex > 7) {
+			block->colourIndex = 0;
+		}
+
+		return GetPlayerColourFromIndex(block->colourIndex);
+	}
+
+	return CLITERAL(Color) { 0, 0, 0, 0 };
 }

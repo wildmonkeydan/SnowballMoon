@@ -12,6 +12,7 @@ typedef struct PlayerBlock {
 	bool active;
 	bool ready;
 	Color chosenColour;
+	short colourIndex;
 	PlayerInputConfig playerConfig;
 }PlayerBlock;
 
