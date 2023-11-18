@@ -27,28 +27,60 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D moonTex, Texture2D spaceTex) 
 	Vector2 playerBlockOffset = { 0 , GetScreenHeight() - playerBlockSize };
 	int fontSize = GetScreenHeight() / 40.f;
 
+	Texture2D logoTex = LoadTexture("Logo.png");
+
+
 	while (!WindowShouldClose()) {
+		int numReady = 0;
 
-		if (IsKeyPressed(KEY_ENTER))
-			break;
-
-		if (input_DetectInputConfig(&config.playerConfig[config.numPlayers - 1])) {
-			blocks[config.numPlayers - 1].active = true;
-			blocks[config.numPlayers - 1].playerConfig = config.playerConfig[config.numPlayers - 1];
-			if (config.numPlayers < 8) {
-				config.numPlayers++;
-			}
+		for (int i = 0; i < config.numPlayers; i++) {
+			if (blocks[i].ready)
+				numReady++;
 		}
 
-		Vector2 uv = animation_AnimateDef(DA_PLAYERIDLE, &idleCtx, GetFrameTime());
+		if (numReady == config.numPlayers - 1 && config.numPlayers >= 3) {
+			for (int i = 0; i < config.numPlayers; i++) {
+				config.playerColours[i] = blocks[i].chosenColour;
+			}
+			config.numPlayers -= 1;
+
+			break;
+		}
 		
 		for (int i = 0; i < config.numPlayers; i++) {
+			if (input_GetButtonPressed(GI_ATTACK, config.playerConfig[i])) {
+				blocks[i].ready = !blocks[i].ready;
+			}
+
 			Color change = PlayerSelectColour(&blocks[i]);
+			
 
 			if (change.a != 0) {
 				blocks[i].chosenColour = change;
 			}
 		}
+
+		if (input_DetectInputConfig(&config.playerConfig[config.numPlayers - 1])) {
+			bool usedConfig = false;
+
+			for (int i = 0; i < config.numPlayers; i++) {
+				if (config.playerConfig[config.numPlayers - 1] == config.playerConfig[i] && !(config.numPlayers - 1 == i)) {
+					usedConfig = true;
+				}
+			}
+
+			if (!usedConfig) {
+				blocks[config.numPlayers - 1].active = true;
+				blocks[config.numPlayers - 1].playerConfig = config.playerConfig[config.numPlayers - 1];
+				if (config.numPlayers < 8) {
+					config.numPlayers++;
+				}
+			}
+		}
+
+		Vector2 uv = animation_AnimateDef(DA_PLAYERIDLE, &idleCtx, GetFrameTime());
+		
+		
 
 		BeginDrawing();
 
@@ -56,6 +88,9 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D moonTex, Texture2D spaceTex) 
 
 		// Draw Space Background
 		DrawTextureRec(spaceTex, (Rectangle) { 0, 0, GetScreenWidth(), GetScreenHeight() }, (Vector2) { 0, 0 }, RAYWHITE);
+
+		// Draw Logo
+		DrawTexturePro(logoTex, (Rectangle) { 0, 0, logoTex.width, logoTex.height }, (Rectangle) { GetScreenWidth() / 2, GetScreenHeight() / 15, GetScreenWidth() / 2.594f, GetScreenHeight() / 2.596f }, (Vector2) { 370, 0 }, 0.f, RAYWHITE);
 
 		// Draw Player Selection
 		for (int i = 0; i < config.numPlayers; i++) {
@@ -88,13 +123,14 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D moonTex, Texture2D spaceTex) 
 					TextCopy(controlType, TextFormat("Controller %d", (int)blocks[i].playerConfig - 3));
 				}
 
-				DrawText(controlType, blockX + playerBlockSize / 10.f, playerBlockOffset.y + playerBlockSize / 50.f, fontSize, BLACK);
+				DrawText(controlType, blockX + playerBlockSize / 10.f, playerBlockOffset.y + playerBlockSize / 3.f, fontSize, BLACK);
 			}
 		}
 
 		EndDrawing();
 	}
 
+	UnloadTexture(logoTex);
 	return config;
 }
 

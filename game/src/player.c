@@ -12,10 +12,11 @@
 #define CROUCH_COLLISION (Rectangle) { 0, playerSize * 0.75f, playerSize / 4, playerSize / 2}
 #define NO_COLLISION (Rectangle) { 0, 0, 0, 0};
 
-void CreatePlayer(Player* player, int playerSize, int id) {
+void CreatePlayer(Player* player, int playerSize, int id, int playerId) {
 	player->angle = 0.f;
 	player->colour = YELLOW;
 	player->id = id;
+	player->playerId = playerId;
 	player->hasSnowball = false;
 	player->flipped = false;
 	animation_ClearContext(&player->ctx);
@@ -96,7 +97,7 @@ int UpdatePlayer(Player* player, int playerSize, float delta, Snowball* sb, int 
 		}
 
 		if (player->stateTimer >= 1.1f && player->hasSnowball) {
-			CreateSnowballStraight(&sb[nextSnowball], playerSize, player->id, player->angle + (player->flipped ? -5.f : 5.f), player->flipped ? -1 : 1);
+			CreateSnowballStraight(&sb[nextSnowball], playerSize, player->playerId, player->angle + (player->flipped ? -5.f : 5.f), player->flipped ? -1 : 1);
 			nextSnowball++;
 
 			if (nextSnowball >= MAX_SNOWBALLS) {

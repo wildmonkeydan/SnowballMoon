@@ -62,7 +62,8 @@ typedef struct Player{
 	bool hasSnowball;
 	bool flipped;
 	int score;
-	int id;
+	int id; // Input ID
+	int playerId; // Player ID
 	AnimContext ctx;
 }Player;
 
