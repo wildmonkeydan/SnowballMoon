@@ -1,6 +1,7 @@
 #include "menu.h"
 #include "types.h"
 #include "animation.h"
+#include "JoyShock/JoyShockLibrary.h"
 
 MenuConfig MenuLoop(Texture2D playerTex, Texture2D moonTex, Texture2D spaceTex) {
 	Color GetPlayerColourFromIndex(int index);
@@ -18,7 +19,9 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D moonTex, Texture2D spaceTex) 
 		blocks[i].ready = false;
 		blocks[i].colourIndex = randColour;
 		blocks[i].playerConfig = GAMEPAD_0;
+		blocks[i].playstationControllerId = -1;
 	}
+
 	AnimContext idleCtx;
 	animation_ClearContext(&idleCtx);
 	idleCtx.loop = true;
@@ -29,6 +32,8 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D moonTex, Texture2D spaceTex) 
 
 	Texture2D logoTex = LoadTexture("Logo.png");
 
+	int numPlaystation = JslConnectDevices();
+	TraceLog(LOG_INFO, "Num Playstation Controllers: %d", numPlaystation);
 
 	while (!WindowShouldClose()) {
 		int numReady = 0;
@@ -57,6 +62,12 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D moonTex, Texture2D spaceTex) 
 
 			if (change.a != 0) {
 				blocks[i].chosenColour = change;
+				if (blocks[i].playstationControllerId != -1) {
+					Color mix = ColorBrightness(change, -0.5f);
+					mix = (Color){ change.r, change.r, change.g, change.b };
+
+					JslSetLightColour(i, ColorToInt(mix));
+				}
 			}
 		}
 
@@ -72,6 +83,21 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D moonTex, Texture2D spaceTex) 
 			if (!usedConfig) {
 				blocks[config.numPlayers - 1].active = true;
 				blocks[config.numPlayers - 1].playerConfig = config.playerConfig[config.numPlayers - 1];
+
+				if (blocks[config.numPlayers - 1].playerConfig >= 4) {
+					// Check if Playstation Controller
+					for (int i = 0; i < numPlaystation; i++) {
+						int buttons = JslGetButtons(i);
+						if (buttons & JSMASK_S) {
+							Color switchColour = blocks[config.numPlayers - 1].chosenColour;
+							switchColour.r = blocks[config.numPlayers - 1].chosenColour.b;
+							switchColour.b = blocks[config.numPlayers - 1].chosenColour.r;
+							JslSetLightColour(i, ColorToInt(ColorContrast(switchColour, -100.f)));
+							blocks[config.numPlayers - 1].playstationControllerId = i;
+						}
+					}
+				}
+
 				if (config.numPlayers < 8) {
 					config.numPlayers++;
 				}
@@ -79,8 +105,12 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D moonTex, Texture2D spaceTex) 
 		}
 
 		Vector2 uv = animation_AnimateDef(DA_PLAYERIDLE, &idleCtx, GetFrameTime());
+
+		/*int buttons = JslGetButtons(0);
 		
-		
+		if (buttons & JSMASK_S) {
+			TraceLog(LOG_INFO, "Cross Pressed");
+		}*/
 
 		BeginDrawing();
 

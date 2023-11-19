@@ -154,6 +154,7 @@ bool input_DetectInputConfig(PlayerInputConfig* config) {
 	for (int i = 0; i < 8; i++) {
 		if (IsGamepadButtonPressed(i, GAMEPAD_BUTTON_RIGHT_FACE_DOWN)) {
 			*config = i + 4;
+			//TraceLog(LOG_INFO, "Controller %d name: %s", i, GetGamepadName(i));
 			return true;
 		}
 	}

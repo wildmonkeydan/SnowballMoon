@@ -14,6 +14,7 @@ typedef struct PlayerBlock {
 	Color chosenColour;
 	short colourIndex;
 	PlayerInputConfig playerConfig;
+	int playstationControllerId;
 }PlayerBlock;
 
 MenuConfig MenuLoop(Texture2D playerTex, Texture2D moonTex, Texture2D spaceTex);

@@ -99,6 +99,7 @@
     <IntDir>obj\x64\Debug\SnowballMoon\</IntDir>
     <TargetName>SnowballMoon</TargetName>
     <TargetExt>.exe</TargetExt>
+    <LibraryPath>C:\Users\dantu\source\SnowballMoon\_bin\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -145,11 +146,12 @@
       <Optimization>Disabled</Optimization>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <CompileAs>Default</CompileAs>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>raylib.lib;winmm.lib;kernel32.lib;opengl32.lib;gdi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>JoyShockLibrary.lib;raylib.lib;winmm.lib;kernel32.lib;opengl32.lib;gdi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\_bin\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -276,6 +278,7 @@
     <ClInclude Include="..\game\src\animation.h" />
     <ClInclude Include="..\game\src\game.h" />
     <ClInclude Include="..\game\src\input.h" />
+    <ClInclude Include="..\game\src\JoyShock\JoyShockLibrary.h" />
     <ClInclude Include="..\game\src\menu.h" />
     <ClInclude Include="..\game\src\player.h" />
     <ClInclude Include="..\game\src\snowball.h" />

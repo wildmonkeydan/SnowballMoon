@@ -53,5 +53,8 @@
     <ClInclude Include="..\game\src\menu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\game\src\JoyShock\JoyShockLibrary.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

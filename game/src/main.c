@@ -1,5 +1,6 @@
 #include <raylib.h>
 #include "game.h"
+#include "JoyShock/JoyShockLibrary.h"
 
 int main() {
 	void Init();
