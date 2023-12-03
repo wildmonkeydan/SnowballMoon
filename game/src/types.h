@@ -67,16 +67,14 @@ typedef struct Player{
 	AnimContext ctx;
 }Player;
 
-/// Palette taken from https://pixeljoint.com/forum/forum_posts.asp?TID=12795 by DawnBringer
-
-#define PLAYER_COLOUR_VIOLET	CLITERAL(Color){ 68, 36, 52, 255 }		// Player Palette - Violet
-#define PLAYER_COLOUR_NAVY		CLITERAL(Color){ 48, 52, 109, 255 }		// Player Palette - Navy
-#define PLAYER_COLOUR_BROWN		CLITERAL(Color){ 133, 76, 48, 255 }		// Player Palette - Brown
-#define PLAYER_COLOUR_GREEN		CLITERAL(Color){ 52, 101, 36, 255 }		// Player Palette - Green
-#define PLAYER_COLOUR_PINK		CLITERAL(Color){ 208, 70, 72, 255 }		// Player Palette - Pink
-#define PLAYER_COLOUR_BLUE		CLITERAL(Color){ 89, 125, 206, 255 }	// Player Palette - Blue
-#define PLAYER_COLOUR_ORANGE	CLITERAL(Color){ 210, 125, 44, 255 }	// Player Palette - Orange
-#define PLAYER_COLOUR_LIME		CLITERAL(Color){ 109, 170, 44, 255 }	// Player Palette - Lime
+#define PLAYER_COLOUR_VIOLET	PURPLE			// Player Palette - Violet
+#define PLAYER_COLOUR_NAVY		DARKBLUE		// Player Palette - Navy
+#define PLAYER_COLOUR_BROWN		RAYWHITE		// Player Palette - Brown
+#define PLAYER_COLOUR_GREEN		GREEN			// Player Palette - Green
+#define PLAYER_COLOUR_PINK		PINK			// Player Palette - Pink
+#define PLAYER_COLOUR_BLUE		BLUE			// Player Palette - Blue
+#define PLAYER_COLOUR_ORANGE	ORANGE			// Player Palette - Orange
+#define PLAYER_COLOUR_LIME		DARKGREEN		// Player Palette - Lime
 
 
 /// Snowball types
@@ -102,6 +100,7 @@ typedef struct Snowball{
 	// Used for SPT_GRAVITY
 	Vector2 position;
 	Vector2 velocity;
+	Vector2 vDirection;
 	// Used for SPT_STRAIGHT
 	float angle;
 	float height;

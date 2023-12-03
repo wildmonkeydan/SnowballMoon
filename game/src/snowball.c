@@ -3,6 +3,7 @@
 #include <raylib.h>
 #include <raymath.h>
 
+
 #define SNOWBALL_SPEED 180.f
 #define STRAIGHT_GRAVITY 160.f
 #define SNOWBALL_RADIUS_SCALAR 0.01f 
@@ -16,12 +17,13 @@ void CreateSnowballStraight(Snowball* sb, int playerHeight, int owner, float ang
 	sb->active = true;
 }
 
-void CreateSnowballGravity(Snowball* sb, int owner, float angle, Vector2 moonMiddle, float moonRadius, Vector2 velocity) {
+void CreateSnowballGravity(Snowball* sb, int owner, float angle, Vector2 moonMiddle, float moonRadius, Vector2 direction, int playerHeight) {
 	sb->owner = owner;
 	sb->type = SPT_GRAVITY;
 
-	sb->position = Vector2Add((Vector2) { moonRadius* cosf(DEG2RAD * angle), moonRadius* sinf(DEG2RAD * angle) }, moonMiddle);
-	sb->velocity = velocity;
+	sb->height = playerHeight * 0.75f;
+	sb->position = Vector2Add((Vector2) { (moonRadius + sb->height) * cosf(DEG2RAD * angle) , (moonRadius + sb->height) * sinf(DEG2RAD * angle) }, moonMiddle);
+	sb->velocity = direction;
 
 	sb->active = true;
 }
@@ -96,6 +98,21 @@ void UpdateSnowball(Snowball* sb, Player* players, int numPlayers, int playerSiz
 		}
 		else {
 
+			Vector2 gravity = { 0, 1.f };
+
+			gravity = Vector2Subtract(moonMiddle, sb->position);
+			gravity = Vector2Normalize(gravity);
+
+			sb->velocity.x -= (gravity.x * 50);
+			sb->velocity.y -= (gravity.y * 50);
+			
+
+			if (CheckCollisionPointCircle(sb->position, moonMiddle, moonRadius)) {
+				sb->active = false;
+			}
+			
+			sb->position.x += sb->velocity.x * delta;
+			sb->position.y += sb->velocity.y * delta;
 		}
 
 	}
@@ -108,7 +125,7 @@ void DrawSnowball(Snowball* sb, Vector2 moonMiddle, float moonRadius) {
 			DrawCircle(((moonRadius + sb->height) * cosf(DEG2RAD * sb->angle)) + moonMiddle.x, ((moonRadius + sb->height) * sinf(DEG2RAD * sb->angle)) + moonMiddle.y, moonRadius * SNOWBALL_RADIUS_SCALAR, RAYWHITE);
 		}
 		else {
-
+			DrawCircle(sb->position.x, sb->position.y, moonRadius * SNOWBALL_RADIUS_SCALAR, RAYWHITE);
 		}
 
 	}

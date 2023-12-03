@@ -51,7 +51,7 @@ void GameLoop() {
 
 		// Update Players
 		for (int i = 0; i < config.numPlayers; i++) {
-			nextSnowball = UpdatePlayer(&players[i], playerSize, delta, snowballs, nextSnowball);
+			nextSnowball = UpdatePlayer(&players[i], playerSize, delta, snowballs, nextSnowball, moonCenter, moonRadius);
 		}
 
 		// Update Snowballs

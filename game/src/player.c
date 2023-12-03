@@ -6,6 +6,7 @@
 
 #define PLAYER_SPEED 25.0f
 #define PLAYER_STEP 0.025f
+#define PLAYER_THROW_STRENGTH 50
 #define MAX_SNOWBALLS 16
 
 #define NORM_COLLISION (Rectangle){ 0, 0, playerSize / 2, playerSize }
@@ -26,7 +27,7 @@ void CreatePlayer(Player* player, int playerSize, int id, int playerId) {
 	player->score = 0;
 }
 
-int UpdatePlayer(Player* player, int playerSize, float delta, Snowball* sb, int nextSnowball) {
+int UpdatePlayer(Player* player, int playerSize, float delta, Snowball* sb, int nextSnowball, Vector2 moonMiddle, float moonRadius) {
 	player->ctx.loop = true;
 	player->stateTimer += delta;
 	player->collision = NORM_COLLISION;
@@ -97,7 +98,8 @@ int UpdatePlayer(Player* player, int playerSize, float delta, Snowball* sb, int 
 		}
 
 		if (player->stateTimer >= 1.1f && player->hasSnowball) {
-			CreateSnowballStraight(&sb[nextSnowball], playerSize, player->playerId, player->angle + (player->flipped ? -5.f : 5.f), player->flipped ? -1 : 1);
+			//CreateSnowballStraight(&sb[nextSnowball], playerSize, player->playerId, player->angle + (player->flipped ? -5.f : 5.f), player->flipped ? -1 : 1);
+			CreateSnowballGravity(&sb[nextSnowball], player->playerId, player->angle + (player->flipped ? -5.f : 5.f), moonMiddle, moonRadius, Vector2Rotate((Vector2) { (player->flipped ? -50.f : 50.f),(player->flipped ? -50.f : 50.f) }, (player->angle + 90) * DEG2RAD), playerSize);
 			nextSnowball++;
 
 			if (nextSnowball >= MAX_SNOWBALLS) {

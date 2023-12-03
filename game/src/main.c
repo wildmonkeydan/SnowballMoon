@@ -24,6 +24,7 @@ void Init() {
 }
 
 void Deinit() {
+	JslDisconnectAndDisposeAll();
 	CloseAudioDevice();
 	CloseWindow();
 }

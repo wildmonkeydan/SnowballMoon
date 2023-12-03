@@ -64,7 +64,7 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D moonTex, Texture2D spaceTex) 
 				blocks[i].chosenColour = change;
 				if (blocks[i].playstationControllerId != -1) {
 					Color mix = ColorBrightness(change, -0.5f);
-					mix = (Color){ change.r, change.r, change.g, change.b };
+					mix = (Color){ 0, change.r, change.g, change.b };
 
 					JslSetLightColour(i, ColorToInt(mix));
 				}
