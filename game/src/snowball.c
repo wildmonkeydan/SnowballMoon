@@ -24,6 +24,7 @@ void CreateSnowballGravity(Snowball* sb, int owner, float angle, Vector2 moonMid
 	sb->height = playerHeight * 0.75f;
 	sb->position = Vector2Add((Vector2) { (moonRadius + sb->height) * cosf(DEG2RAD * angle) , (moonRadius + sb->height) * sinf(DEG2RAD * angle) }, moonMiddle);
 	sb->velocity = direction;
+	sb->vDirection = direction;
 
 	sb->active = true;
 }
@@ -103,16 +104,18 @@ void UpdateSnowball(Snowball* sb, Player* players, int numPlayers, int playerSiz
 			gravity = Vector2Subtract(moonMiddle, sb->position);
 			gravity = Vector2Normalize(gravity);
 
-			sb->velocity.x -= (gravity.x * 50);
-			sb->velocity.y -= (gravity.y * 50);
-			
+			sb->velocity.x += (gravity.x * 4000) * delta;
+			sb->velocity.y += (gravity.y * 4000) * delta;
+
+			sb->velocity.x += sb->vDirection.x * delta;
+			sb->velocity.y += sb->vDirection.y * delta;
+
+			sb->position.x += sb->velocity.x * delta;
+			sb->position.y += sb->velocity.y * delta;
 
 			if (CheckCollisionPointCircle(sb->position, moonMiddle, moonRadius)) {
 				sb->active = false;
 			}
-			
-			sb->position.x += sb->velocity.x * delta;
-			sb->position.y += sb->velocity.y * delta;
 		}
 
 	}

@@ -99,7 +99,7 @@ int UpdatePlayer(Player* player, int playerSize, float delta, Snowball* sb, int 
 
 		if (player->stateTimer >= 1.1f && player->hasSnowball) {
 			//CreateSnowballStraight(&sb[nextSnowball], playerSize, player->playerId, player->angle + (player->flipped ? -5.f : 5.f), player->flipped ? -1 : 1);
-			CreateSnowballGravity(&sb[nextSnowball], player->playerId, player->angle + (player->flipped ? -5.f : 5.f), moonMiddle, moonRadius, Vector2Rotate((Vector2) { (player->flipped ? -50.f : 50.f),(player->flipped ? -50.f : 50.f) }, (player->angle + 90) * DEG2RAD), playerSize);
+			CreateSnowballGravity(&sb[nextSnowball], player->playerId, player->angle + (player->flipped ? -5.f : 5.f), moonMiddle, moonRadius, Vector2Rotate((Vector2) { (player->flipped ? -1200.f : 1200.f), 100 }, (player->angle + 90) * DEG2RAD), playerSize);
 			nextSnowball++;
 
 			if (nextSnowball >= MAX_SNOWBALLS) {
