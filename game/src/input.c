@@ -78,13 +78,13 @@ bool input_GetKeyConfigUp(GameInput button, int config) {
 
 	switch (button) {
 	case GI_LEFT:
-		return IsKeyUp(keyConfig.left);
+		return IsKeyReleased(keyConfig.left);
 	case GI_RIGHT:
-		return IsKeyUp(keyConfig.right);
+		return IsKeyReleased(keyConfig.right);
 	case GI_DOWN:
-		return IsKeyUp(keyConfig.down);
+		return IsKeyReleased(keyConfig.down);
 	case GI_ATTACK:
-		return IsKeyUp(keyConfig.attack);
+		return IsKeyReleased(keyConfig.attack);
 	}
 }
 

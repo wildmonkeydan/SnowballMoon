@@ -20,6 +20,9 @@ void GameLoop() {
 	SetTextureFilter(spaceTex, TEXTURE_FILTER_TRILINEAR);
 	SetTextureWrap(spaceTex, TEXTURE_WRAP_REPEAT);
 
+	Texture2D arrowTex = LoadTexture("Arrow.png");
+	SetTextureFilter(spaceTex, TEXTURE_FILTER_TRILINEAR);
+
 	MenuConfig config = MenuLoop(playerTex, moonTex, spaceTex);
 
 	// Snowball vars
@@ -71,7 +74,7 @@ void GameLoop() {
 		
 		// Draw Players
 		for (int i = 0; i < config.numPlayers; i++) {
-			DrawPlayer(&players[i], moonCenter, moonRadius - moonRadiusAdjust, playerTex, playerSize, delta);
+			DrawPlayer(&players[i], moonCenter, moonRadius - moonRadiusAdjust, playerTex, arrowTex, playerSize, delta);
 		}
 
 		// Draw Snowballs
@@ -84,6 +87,26 @@ void GameLoop() {
 		for (int i = 0; i < config.numPlayers; i++) {
 			DrawText(TextFormat("%d", players[i].score),(GetScreenWidth() / 9) * i + (((GetScreenWidth() / 9) / 8) * i), GetScreenHeight() - fontSize, fontSize, players[i].colour);
 		}
+
+		int activeSnowball = -1;
+
+		for (int i = 0; i < MAX_SNOWBALLS; i++) {
+			if (snowballs[i].active) {
+				activeSnowball = i;
+				break;
+			}
+		}
+
+		Color triColour = RAYWHITE;
+
+		if (activeSnowball != -1) {
+			if (CheckCollisionPointTriangle(snowballs[activeSnowball].position, (Vector2) { 0, GetScreenHeight() }, (Vector2) { GetScreenWidth(), GetScreenHeight() }, (Vector2) { GetScreenWidth() / 2, 0 })) {
+				triColour = RED;
+			}
+			
+		}
+		
+		
 		//DrawText(TextFormat("%d", players[1].score), GetScreenWidth() - (fontSize * 3), 0, fontSize, players[1].colour);
 		//DrawText(TextFormat("%d", players[2].score), 0, GetScreenHeight() - fontSize, fontSize, players[2].colour);
 		//DrawText(TextFormat("%d", players[3].score), GetScreenWidth() - (fontSize * 3), GetScreenHeight() - fontSize, fontSize, players[3].colour);

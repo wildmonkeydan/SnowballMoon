@@ -6,6 +6,7 @@
 
 #define SNOWBALL_SPEED 180.f
 #define STRAIGHT_GRAVITY 160.f
+#define STANDARD_GRAVITY 4000
 #define SNOWBALL_RADIUS_SCALAR 0.01f 
 
 void CreateSnowballStraight(Snowball* sb, int playerHeight, int owner, float angle, int direction) {
@@ -41,43 +42,15 @@ void UpdateSnowball(Snowball* sb, Player* players, int numPlayers, int playerSiz
 				sb->active = false;
 			}
 
-			Vector2 playerCollision[4] = { 0 };
-
 			for (int i = 0; i < numPlayers; i++) {
-				// Rotate collision
-
-				int x = (moonRadius + players[i].collision.y) * cosf(DEG2RAD * players[i].angle);
-				int y = (moonRadius + players[i].collision.y) * sinf(DEG2RAD * players[i].angle);
-
-				float sinRotation = sinf((players[i].angle + 90) * DEG2RAD);
-				float cosRotation = cosf((players[i].angle + 90) * DEG2RAD);
-				float dx = -playerSize / 4;
-				float dy = -playerSize;
-
-				playerCollision[0].x = x + dx * cosRotation - dy * sinRotation;
-				playerCollision[0].y = y + dx * sinRotation + dy * cosRotation;
-
-				playerCollision[1].x = x + dx * cosRotation - (dy + players[i].collision.height) * sinRotation;
-				playerCollision[1].y = y + dx * sinRotation + (dy + players[i].collision.height) * cosRotation;
-
-
-				playerCollision[2].x = x + (dx + players[i].collision.width) * cosRotation - (dy + players[i].collision.height) * sinRotation;
-				playerCollision[2].y = y + (dx + players[i].collision.width) * sinRotation + (dy + players[i].collision.height) * cosRotation;
-
-
-				playerCollision[3].x = x + (dx + players[i].collision.width) * cosRotation - dy * sinRotation;
-				playerCollision[3].y = y + (dx + players[i].collision.width) * sinRotation + dy * cosRotation;
-
-				for (int i = 0; i < 4; i++) {
-					playerCollision[i] = Vector2Add(playerCollision[i], moonMiddle);
-				}
-
 				Vector2 snowballPos = (Vector2){ ((moonRadius + sb->height) * cosf(DEG2RAD * sb->angle)) + moonMiddle.x, ((moonRadius + sb->height) * sinf(DEG2RAD * sb->angle)) + moonMiddle.y };
 
-				if (CheckCollisionPointPoly(snowballPos, playerCollision, 4) && ((players[i].angle + 30) > sb->angle && (players[i].angle - 30) < sb->angle)) {
+
+				if (CheckCollisionPointTriangle(snowballPos, players[i].collisionPoly[1], players[i].collisionPoly[0], players[i].collisionPoly[3])
+					|| CheckCollisionPointTriangle(snowballPos, players[i].collisionPoly[3], players[i].collisionPoly[2], players[i].collisionPoly[1])) {
 					sb->active = false;
 
-					if (sb->owner == players[i].id) { // If hit self
+					if (sb->owner == players[i].playerId) { // If hit self
 						players[i].score--;
 					}
 					else {
@@ -104,8 +77,8 @@ void UpdateSnowball(Snowball* sb, Player* players, int numPlayers, int playerSiz
 			gravity = Vector2Subtract(moonMiddle, sb->position);
 			gravity = Vector2Normalize(gravity);
 
-			sb->velocity.x += (gravity.x * 4000) * delta;
-			sb->velocity.y += (gravity.y * 4000) * delta;
+			sb->velocity.x += (gravity.x * STANDARD_GRAVITY) * delta;
+			sb->velocity.y += (gravity.y * STANDARD_GRAVITY) * delta;
 
 			sb->velocity.x += sb->vDirection.x * delta;
 			sb->velocity.y += sb->vDirection.y * delta;
@@ -116,6 +89,27 @@ void UpdateSnowball(Snowball* sb, Player* players, int numPlayers, int playerSiz
 			if (CheckCollisionPointCircle(sb->position, moonMiddle, moonRadius)) {
 				sb->active = false;
 			}
+			else
+			{
+				for (int i = 0; i < numPlayers; i++) {
+
+					if (CheckCollisionPointTriangle(sb->position, players[i].collisionPoly[1], players[i].collisionPoly[0], players[i].collisionPoly[3]) 
+						|| CheckCollisionPointTriangle(sb->position, players[i].collisionPoly[3], players[i].collisionPoly[2], players[i].collisionPoly[1])) {
+						sb->active = false;
+
+						if (sb->owner == players[i].playerId) { // If hit self
+							players[i].score--;
+						}
+						else {
+							players[sb->owner].score++;
+						}
+
+						players[i].state = PS_HIT;
+						players[i].stateTimer = 0;
+					}
+				}
+			}
+			
 		}
 
 	}

@@ -46,7 +46,8 @@ typedef enum PlayerState{
 	PS_COLLECT,
 	PS_THROW,
 	PS_RUN,
-	PS_HIT
+	PS_HIT,
+	PS_AIM
 }PlayerState;
 
 /// <summary>
@@ -60,11 +61,14 @@ typedef struct Player{
 	float stateTimer;
 	Color colour;
 	bool hasSnowball;
+	bool throwing;
+	float snowballAngle;
 	bool flipped;
 	int score;
 	int id; // Input ID
 	int playerId; // Player ID
 	AnimContext ctx;
+	Vector2 collisionPoly[4];
 }Player;
 
 #define PLAYER_COLOUR_VIOLET	PURPLE			// Player Palette - Violet
