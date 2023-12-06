@@ -66,7 +66,6 @@ int UpdatePlayer(Player* player, int playerSize, float delta, Snowball* sb, int 
 			else {
 				player->state = PS_THROW;
 			}
-			player->collision = NO_COLLISION;
 			player->throwing = false;
 		}
 
@@ -93,7 +92,6 @@ int UpdatePlayer(Player* player, int playerSize, float delta, Snowball* sb, int 
 			}
 			if (input_GetButton(GI_ATTACK, player->id) && player->hasSnowball && player->stateTimer > 2.f) {
 				player->state = PS_THROW;
-				player->collision = NO_COLLISION;
 			}
 		}
 		break;
