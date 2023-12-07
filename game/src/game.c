@@ -168,7 +168,7 @@ bool GameModeUpdate(GameMode mode, Player* players, int params[2], float timer, 
 		break;
 	case GM_HOARDER:
 		for (int i = 0; i < numPlayers; i++) {
-			if (players[i].snowballCount >= params[0]) {
+			if (players[i].snowballCount >= params[1]) {
 				*winner = i;
 				gameEnd = true;
 			}

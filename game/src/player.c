@@ -34,7 +34,6 @@ int UpdatePlayer(Player* player, int playerSize, float delta, Snowball* sb, int 
 	player->stateTimer += delta;
 	player->collision = NORM_COLLISION;
 
-	
 
 	switch (player->state) {
 	case PS_STAND:
@@ -167,7 +166,7 @@ int UpdatePlayer(Player* player, int playerSize, float delta, Snowball* sb, int 
 		}
 
 		if (!input_GetButton(GI_ATTACK, player->id)) {
-			CreateSnowballGravity(&sb[nextSnowball], player->playerId, player->angle + (player->flipped ? -5.f : 5.f), moonMiddle, moonRadius, Vector2Rotate((Vector2) { (player->flipped ? -1200.f : 1200.f), player->snowballAngle * 5.F }, (player->angle + 90)* DEG2RAD), playerSize);
+			CreateSnowballGravity(&sb[nextSnowball], player->playerId, player->angle + (player->flipped ? -5.f : 5.f), moonMiddle, moonRadius, Vector2Rotate((Vector2) { player->flipped ? -1.f : 1.f, player->flipped ? -1.f : 1.f }, ((player->angle) + player->snowballAngle) * DEG2RAD), playerSize);
 
 			nextSnowball++;
 

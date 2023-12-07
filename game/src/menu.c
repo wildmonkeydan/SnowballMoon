@@ -8,6 +8,8 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D moonTex, Texture2D spaceTex) 
 	Color PlayerSelectColour(PlayerBlock* block);
 	const char* GetTextFromGameMode(GameMode mode);
 	void SelectGameMode(GameMode * mode);
+	void UpdateGameModeParams(int params[2], GameMode mode);
+	void DrawGameModeParams(int params[2], GameMode mode, int fontSize);
 
 	MenuConfig config = { 0 };
 	config.numPlayers = 1;
@@ -52,17 +54,6 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D moonTex, Texture2D spaceTex) 
 				config.playerColours[i] = blocks[i].chosenColour;
 			}
 			config.numPlayers -= 1;
-
-			switch (config.mode) {
-			case GM_FREE_FOR_ALL:
-				config.modeParams[0] = 180; // Timer
-				config.modeParams[1] = 15; // Score Limit
-				break;
-			case GM_HOARDER:
-				config.modeParams[0] = 10; // Snowball Limit
-				config.modeParams[1] = 180; // Timer
-				break;
-			}
 
 			break;
 		}
@@ -122,6 +113,7 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D moonTex, Texture2D spaceTex) 
 		}
 
 		SelectGameMode(&config.mode);
+		UpdateGameModeParams(config.modeParams, config.mode);
 
 		// Animate the characters
 		Vector2 uv = animation_AnimateDef(DA_PLAYERIDLE, &idleCtx, GetFrameTime());
@@ -140,6 +132,7 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D moonTex, Texture2D spaceTex) 
 
 		// Draw Round Info
 		DrawTextPro(GetFontDefault(), GetTextFromGameMode(config.mode), (Vector2) { GetScreenWidth() / 2, GetScreenHeight() / 3 }, (Vector2) { (TextLength(GetTextFromGameMode(config.mode)) * (fontSize * 2)) / 4, 0 }, 0.f, fontSize * 2, fontSize / 10, RAYWHITE);
+		DrawGameModeParams(config.modeParams, config.mode, fontSize);
 
 		// Draw Player Selection
 		for (int i = 0; i < config.numPlayers; i++) {
@@ -249,4 +242,56 @@ void SelectGameMode(GameMode* mode) {
 
 	if (IsKeyPressed(KEY_THREE))
 		*mode = GM_TEAM_FORT;
+}
+
+void UpdateGameModeParams(int params[2], GameMode mode) {
+	switch (mode) {
+	case GM_FREE_FOR_ALL:
+		if (IsKeyPressed(KEY_KP_ADD)) {
+			params[0] += 60;
+		}
+		if (IsKeyPressed(KEY_KP_SUBTRACT) && params[0] > 0) {
+			params[0] -= 60;
+		}
+
+		if (IsKeyPressed(KEY_PAGE_UP)) {
+			params[1] += 5;
+		}
+		if (IsKeyPressed(KEY_PAGE_DOWN) && params[1] > 0) {
+			params[1] -= 5;
+		}
+		break;
+	case GM_HOARDER:
+		if (IsKeyPressed(KEY_KP_ADD)) {
+			params[1] += 60;
+		}
+		if (IsKeyPressed(KEY_KP_SUBTRACT) && params[1] > 0) {
+			params[1] -= 60;
+		}
+
+		if (IsKeyPressed(KEY_PAGE_UP)) {
+			params[0] += 5;
+		}
+		if (IsKeyPressed(KEY_PAGE_DOWN) && params[1] > 0) {
+			params[0] -= 5;
+		}
+		break;
+	default:
+		break;
+	}
+}
+
+void DrawGameModeParams(int params[2], GameMode mode, int fontSize) {
+	switch (mode) {
+	case GM_FREE_FOR_ALL:
+		DrawTextPro(GetFontDefault(), TextFormat("Timer: %d", params[0]), (Vector2) { GetScreenWidth() / 2, GetScreenHeight() / 3 + (fontSize) + (fontSize * 2) }, (Vector2) { (TextLength(TextFormat("Timer: %d", params[0])) * (fontSize)) / 4, 0 }, 0.f, fontSize, fontSize / 10, RAYWHITE);
+		DrawTextPro(GetFontDefault(), TextFormat("Score Limit: %d", params[1]), (Vector2) { GetScreenWidth() / 2, GetScreenHeight() / 3 + (fontSize * 4) }, (Vector2) { (TextLength(TextFormat("Score Limit: %d", params[1])) * (fontSize)) / 4, 0 }, 0.f, fontSize, fontSize / 10, RAYWHITE);
+		break;
+	case GM_HOARDER:
+		DrawTextPro(GetFontDefault(), TextFormat("Timer: %d", params[0]), (Vector2) { GetScreenWidth() / 2, GetScreenHeight() / 3 + (fontSize) + (fontSize * 2) }, (Vector2) { (TextLength(TextFormat("Timer: %d", params[0])) * (fontSize)) / 4, 0 }, 0.f, fontSize, fontSize / 10, RAYWHITE);
+		DrawTextPro(GetFontDefault(), TextFormat("Snowball Limit: %d", params[1]), (Vector2) { GetScreenWidth() / 2, GetScreenHeight() / 3 + (fontSize * 4) }, (Vector2) { (TextLength(TextFormat("Snowball Limit: %d", params[1])) * (fontSize)) / 4, 0 }, 0.f, fontSize, fontSize / 10, RAYWHITE);
+		break;
+	default:
+		break;
+	}
 }

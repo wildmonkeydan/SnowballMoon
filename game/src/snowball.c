@@ -24,8 +24,10 @@ void CreateSnowballGravity(Snowball* sb, int owner, float angle, Vector2 moonMid
 
 	sb->height = playerHeight * 0.75f;
 	sb->position = Vector2Add((Vector2) { (moonRadius + sb->height) * cosf(DEG2RAD * angle) , (moonRadius + sb->height) * sinf(DEG2RAD * angle) }, moonMiddle);
-	sb->velocity = direction;
-	sb->vDirection = direction;
+	
+	sb->vDirection = Vector2Normalize(direction);
+	sb->velocity.x = sb->vDirection.x * 2000.f;
+	sb->velocity.y = sb->vDirection.y * 2000.f;
 
 	sb->active = true;
 }
@@ -75,13 +77,14 @@ void UpdateSnowball(Snowball* sb, Player* players, int numPlayers, int playerSiz
 			Vector2 gravity = { 0, 1.f };
 
 			gravity = Vector2Subtract(moonMiddle, sb->position);
+			float distance = Vector2Length(gravity);
 			gravity = Vector2Normalize(gravity);
+			float distanceMultiplier = sqrtf(moonRadius/distance);
 
-			sb->velocity.x += (gravity.x * STANDARD_GRAVITY) * delta;
-			sb->velocity.y += (gravity.y * STANDARD_GRAVITY) * delta;
+			sb->velocity.x += (gravity.x * (distanceMultiplier * STANDARD_GRAVITY)) * delta;
+			sb->velocity.y += (gravity.y * (distanceMultiplier * STANDARD_GRAVITY)) * delta;
 
-			sb->velocity.x += sb->vDirection.x * delta;
-			sb->velocity.y += sb->vDirection.y * delta;
+			sb->vDirection = Vector2Normalize(sb->velocity);
 
 			sb->position.x += sb->velocity.x * delta;
 			sb->position.y += sb->velocity.y * delta;
