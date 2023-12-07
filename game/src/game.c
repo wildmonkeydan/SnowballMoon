@@ -130,7 +130,7 @@ void GameLoop() {
 			}
 
 			// Draw Result
-			DrawTextPro(GetFontDefault(), TextFormat("Player %d Wins!", gameWinner + 1), (Vector2) { GetScreenWidth() / 2.f, GetScreenHeight() / 2.f }, (Vector2) { (TextLength(TextFormat("Player %d Wins!", gameWinner + 1)) * (fontSize * 4)) / 4, fontSize }, 0.f, fontSize * 4, fontSize / 10, players[gameWinner].colour);
+			DrawTextPro(GetFontDefault(), TextFormat("Player %d Wins!", gameWinner + 1), (Vector2) { GetScreenWidth() / 2.f, GetScreenHeight() / 2.f }, (Vector2) { ((TextLength(TextFormat("Player %d Wins!", gameWinner + 1)) - 1) * (fontSize * 4)) / 4, fontSize }, 0.f, fontSize * 4, fontSize / 10, players[gameWinner].colour);
 
 			EndDrawing();
 		}
