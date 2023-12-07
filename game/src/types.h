@@ -60,7 +60,7 @@ typedef struct Player{
 	Rectangle collision;
 	float stateTimer;
 	Color colour;
-	bool hasSnowball;
+	unsigned char snowballCount;
 	bool throwing;
 	float snowballAngle;
 	bool flipped;
@@ -110,3 +110,12 @@ typedef struct Snowball{
 	float height;
 	int direction;
 }Snowball;
+
+/// <summary>
+/// Enum for game mode logic
+/// </summary>
+typedef enum GameMode {
+	GM_FREE_FOR_ALL,
+	GM_HOARDER,
+	GM_TEAM_FORT
+}GameMode;

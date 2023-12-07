@@ -6,9 +6,12 @@
 MenuConfig MenuLoop(Texture2D playerTex, Texture2D moonTex, Texture2D spaceTex) {
 	Color GetPlayerColourFromIndex(int index);
 	Color PlayerSelectColour(PlayerBlock* block);
+	const char* GetTextFromGameMode(GameMode mode);
+	void SelectGameMode(GameMode * mode);
 
 	MenuConfig config = { 0 };
 	config.numPlayers = 1;
+	config.mode = GM_FREE_FOR_ALL;
 
 	PlayerBlock blocks[8];
 	for (int i = 0; i < 8; i++) {
@@ -38,6 +41,7 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D moonTex, Texture2D spaceTex) 
 	while (!WindowShouldClose()) {
 		int numReady = 0;
 
+		// Ready up
 		for (int i = 0; i < config.numPlayers; i++) {
 			if (blocks[i].ready)
 				numReady++;
@@ -48,6 +52,17 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D moonTex, Texture2D spaceTex) 
 				config.playerColours[i] = blocks[i].chosenColour;
 			}
 			config.numPlayers -= 1;
+
+			switch (config.mode) {
+			case GM_FREE_FOR_ALL:
+				config.modeParams[0] = 180; // Timer
+				config.modeParams[1] = 15; // Score Limit
+				break;
+			case GM_HOARDER:
+				config.modeParams[0] = 10; // Snowball Limit
+				config.modeParams[1] = 180; // Timer
+				break;
+			}
 
 			break;
 		}
@@ -71,6 +86,8 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D moonTex, Texture2D spaceTex) 
 			}
 		}
 
+
+		// Search for new players
 		if (input_DetectInputConfig(&config.playerConfig[config.numPlayers - 1])) {
 			bool usedConfig = false;
 
@@ -104,13 +121,12 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D moonTex, Texture2D spaceTex) 
 			}
 		}
 
+		SelectGameMode(&config.mode);
+
+		// Animate the characters
 		Vector2 uv = animation_AnimateDef(DA_PLAYERIDLE, &idleCtx, GetFrameTime());
 
-		/*int buttons = JslGetButtons(0);
 		
-		if (buttons & JSMASK_S) {
-			TraceLog(LOG_INFO, "Cross Pressed");
-		}*/
 
 		BeginDrawing();
 
@@ -120,7 +136,10 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D moonTex, Texture2D spaceTex) 
 		DrawTextureRec(spaceTex, (Rectangle) { 0, 0, GetScreenWidth(), GetScreenHeight() }, (Vector2) { 0, 0 }, RAYWHITE);
 
 		// Draw Logo
-		DrawTexturePro(logoTex, (Rectangle) { 0, 0, logoTex.width, logoTex.height }, (Rectangle) { GetScreenWidth() / 2, GetScreenHeight() / 15, GetScreenWidth() / 2.594f, GetScreenHeight() / 2.596f }, (Vector2) { 370, 0 }, 0.f, RAYWHITE);
+		DrawTexturePro(logoTex, (Rectangle) { 0, 0, logoTex.width, logoTex.height }, (Rectangle) { GetScreenWidth() / 2, GetScreenHeight() / 15, 740, 416 }, (Vector2) { 370, 0 }, 0.f, RAYWHITE);
+
+		// Draw Round Info
+		DrawTextPro(GetFontDefault(), GetTextFromGameMode(config.mode), (Vector2) { GetScreenWidth() / 2, GetScreenHeight() / 3 }, (Vector2) { (TextLength(GetTextFromGameMode(config.mode)) * (fontSize * 2)) / 4, 0 }, 0.f, fontSize * 2, fontSize / 10, RAYWHITE);
 
 		// Draw Player Selection
 		for (int i = 0; i < config.numPlayers; i++) {
@@ -129,7 +148,7 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D moonTex, Texture2D spaceTex) 
 
 				DrawTexturePro(playerTex, (Rectangle) { uv.x, uv.y, 128, 128 }, (Rectangle) { blockX, playerBlockOffset.y - playerBlockSize, playerBlockSize, playerBlockSize }, (Vector2) { 0, 0 }, 0.f, blocks[i].chosenColour);
 
-				DrawRectangleRounded((Rectangle) { blockX, playerBlockOffset.y, playerBlockSize, playerBlockSize }, playerBlockSize / 400.f, 3, blocks[i].ready ? GREEN : GRAY);
+				DrawRectangleRounded((Rectangle) { blockX, playerBlockOffset.y, playerBlockSize, playerBlockSize }, playerBlockSize / 800.f, 3, blocks[i].ready ? GREEN : GRAY);
 				char controlType[16] = "Controller ";
 
 				if (blocks[i].playerConfig < 4) {
@@ -206,4 +225,28 @@ Color PlayerSelectColour(PlayerBlock* block) {
 	}
 
 	return CLITERAL(Color) { 0, 0, 0, 0 };
+}
+
+const char* GetTextFromGameMode(GameMode mode) {
+	switch (mode) {
+	case GM_FREE_FOR_ALL:
+		return "Free for all";
+	case GM_HOARDER:
+		return "Hoarder";
+	case GM_TEAM_FORT:
+		return "Team Fort";
+	default:
+		return "ERROR";
+	}
+}
+
+void SelectGameMode(GameMode* mode) {
+	if (IsKeyPressed(KEY_ONE))
+		*mode = GM_FREE_FOR_ALL;
+
+	if (IsKeyPressed(KEY_TWO))
+		*mode = GM_HOARDER;
+
+	if (IsKeyPressed(KEY_THREE))
+		*mode = GM_TEAM_FORT;
 }

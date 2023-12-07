@@ -12,14 +12,13 @@
 #define NORM_COLLISION (Rectangle){ 0, 0, playerSize / 2, playerSize }
 #define CROUCH_COLLISION (Rectangle) { 0, -playerSize / 2, playerSize / 2, playerSize / 2}
 #define NO_COLLISION (Rectangle) { 0, 0, 0, 0};
-#define COLLISION_DEBUG
 
 void CreatePlayer(Player* player, int playerSize, int id, int playerId) {
 	player->angle = 0.f;
 	player->colour = YELLOW;
 	player->id = id;
 	player->playerId = playerId;
-	player->hasSnowball = false;
+	player->snowballCount = 0;
 	player->flipped = false;
 	player->throwing = false;
 	player->snowballAngle = 0.f;
@@ -53,20 +52,21 @@ int UpdatePlayer(Player* player, int playerSize, float delta, Snowball* sb, int 
 			player->state = PS_CROUCH;
 			player->ctx.loop = false;
 		}
-		if (input_GetButtonPressed(GI_ATTACK, player->id) && player->hasSnowball) {
+		if (input_GetButtonPressed(GI_ATTACK, player->id) && player->snowballCount > 0) {
 			player->stateTimer = 0;
 
 			player->throwing = true;
 		}
-		if (player->hasSnowball && player->stateTimer > 0.25f && player->throwing) {
+		if (player->snowballCount > 0 && player->stateTimer > 0.25f && player->throwing) {
+			player->throwing = false;
 			if (input_GetButton(GI_ATTACK, player->id)) {
 				player->state = PS_AIM;
 				player->snowballAngle = 0;
 			}
 			else {
 				player->state = PS_THROW;
+				player->throwing = true;
 			}
-			player->throwing = false;
 		}
 
 		break;
@@ -87,10 +87,10 @@ int UpdatePlayer(Player* player, int playerSize, float delta, Snowball* sb, int 
 				player->state = PS_CROUCH;
 				player->ctx.loop = false;
 			}
-			if (input_GetButtonPressed(GI_ATTACK, player->id) && player->hasSnowball) {
+			if (input_GetButtonPressed(GI_ATTACK, player->id) && player->snowballCount > 0) {
 				player->stateTimer = 0;
 			}
-			if (input_GetButton(GI_ATTACK, player->id) && player->hasSnowball && player->stateTimer > 2.f) {
+			if (input_GetButton(GI_ATTACK, player->id) && player->snowballCount > 0 && player->stateTimer > 2.f) {
 				player->state = PS_THROW;
 			}
 		}
@@ -118,7 +118,7 @@ int UpdatePlayer(Player* player, int playerSize, float delta, Snowball* sb, int 
 			player->angle += (PLAYER_STEP) * player->flipped ? -1 : 1;
 		}
 
-		if (player->stateTimer >= 1.1f && player->hasSnowball) {
+		if (player->stateTimer >= 1.1f && player->snowballCount > 0 && player->throwing) {
 			CreateSnowballStraight(&sb[nextSnowball], playerSize, player->playerId, player->angle + (player->flipped ? -5.f : 5.f), player->flipped ? -1 : 1);
 			
 			nextSnowball++;
@@ -127,16 +127,21 @@ int UpdatePlayer(Player* player, int playerSize, float delta, Snowball* sb, int 
 				nextSnowball = 0;
 			}
 
-			player->hasSnowball = false;
+			player->snowballCount--;
+			player->throwing = false;
 		}
 
 		if (player->stateTimer >= 1.5f) {
 			player->collision = NORM_COLLISION;
 			player->state = PS_STAND;
+			
 		}
 		break;
 	case PS_HIT:
 		if (player->stateTimer >= 1.f) {
+			if (player->snowballCount > 0) {
+				player->snowballCount--;
+			}
 			player->state = PS_STAND;
 		}
 		break;
@@ -145,7 +150,7 @@ int UpdatePlayer(Player* player, int playerSize, float delta, Snowball* sb, int 
 
 		if (player->stateTimer >= 0.95f) {
 			player->state = PS_CROUCH;
-			player->hasSnowball = true;
+			player->snowballCount++;
 		}
 		break;
 	case PS_AIM:
@@ -170,7 +175,7 @@ int UpdatePlayer(Player* player, int playerSize, float delta, Snowball* sb, int 
 				nextSnowball = 0;
 			}
 
-			player->hasSnowball = false;
+			player->snowballCount--;
 
 			player->state = PS_STAND;
 		}
@@ -222,7 +227,7 @@ int UpdatePlayer(Player* player, int playerSize, float delta, Snowball* sb, int 
 	return nextSnowball;
 }
 
-void DrawPlayer(Player* player, Vector2 moonMiddle, float moonRadius, Texture2D playerTex, Texture2D arrowTex, int playerSize, float delta) {
+void DrawPlayer(Player* player, Vector2 moonMiddle, float moonRadius, Texture2D playerTex, Texture2D arrowTex, int playerSize, float delta, GameMode mode) {
 
 	int x = moonRadius * cosf(DEG2RAD * player->angle);
 	int y = moonRadius * sinf(DEG2RAD * player->angle);
@@ -254,6 +259,11 @@ void DrawPlayer(Player* player, Vector2 moonMiddle, float moonRadius, Texture2D 
 	Rectangle rect = { x + moonMiddle.x, y + moonMiddle.y, playerSize, playerSize };
 
 	DrawTexturePro(playerTex, texRect, rect, (Vector2) { playerSize / 2, playerSize }, player->angle + 90, player->colour);
+
+	if (mode == GM_HOARDER) {
+		DrawTextPro(GetFontDefault(), TextFormat("%d", player->snowballCount), (Vector2) { ((moonRadius + playerSize) * cosf(DEG2RAD * player->angle)) + moonMiddle.x, ((moonRadius + playerSize) * sinf(DEG2RAD * player->angle)) + moonMiddle.y }, (Vector2) { playerSize / 16, playerSize / 4 }, 0, playerSize / 4, 4, RAYWHITE);
+	}
+	
 
 	if (player->state == PS_AIM) {
 		int arrowX = (moonRadius + (playerSize / 2)) * cosf(DEG2RAD * (player->angle + (player->flipped ? -5.f : 5.f)));

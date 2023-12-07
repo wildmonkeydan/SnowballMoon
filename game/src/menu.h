@@ -1,11 +1,14 @@
 #pragma once
 #include "input.h"
 #include <raylib.h>
+#include "types.h"
 
 typedef struct MenuConfig {
 	int numPlayers;
 	PlayerInputConfig playerConfig[8];
 	Color playerColours[8];
+	GameMode mode;
+	int modeParams[2];
 }MenuConfig;
 
 typedef struct PlayerBlock {
