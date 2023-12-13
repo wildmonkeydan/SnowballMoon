@@ -14,6 +14,8 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D moonTex, Texture2D spaceTex) 
 	MenuConfig config = { 0 };
 	config.numPlayers = 1;
 	config.mode = GM_FREE_FOR_ALL;
+	config.modeParams[0] = 120;
+	config.modeParams[1] = 10;
 
 	PlayerBlock blocks[8];
 	for (int i = 0; i < 8; i++) {
@@ -245,39 +247,18 @@ void SelectGameMode(GameMode* mode) {
 }
 
 void UpdateGameModeParams(int params[2], GameMode mode) {
-	switch (mode) {
-	case GM_FREE_FOR_ALL:
-		if (IsKeyPressed(KEY_KP_ADD)) {
-			params[0] += 60;
-		}
-		if (IsKeyPressed(KEY_KP_SUBTRACT) && params[0] > 0) {
-			params[0] -= 60;
-		}
+	if (IsKeyPressed(KEY_KP_ADD)) {
+		params[0] += 60;
+	}
+	if (IsKeyPressed(KEY_KP_SUBTRACT) && params[0] > 0) {
+		params[0] -= 60;
+	}
 
-		if (IsKeyPressed(KEY_PAGE_UP)) {
-			params[1] += 5;
-		}
-		if (IsKeyPressed(KEY_PAGE_DOWN) && params[1] > 0) {
-			params[1] -= 5;
-		}
-		break;
-	case GM_HOARDER:
-		if (IsKeyPressed(KEY_KP_ADD)) {
-			params[1] += 60;
-		}
-		if (IsKeyPressed(KEY_KP_SUBTRACT) && params[1] > 0) {
-			params[1] -= 60;
-		}
-
-		if (IsKeyPressed(KEY_PAGE_UP)) {
-			params[0] += 5;
-		}
-		if (IsKeyPressed(KEY_PAGE_DOWN) && params[1] > 0) {
-			params[0] -= 5;
-		}
-		break;
-	default:
-		break;
+	if (IsKeyPressed(KEY_PAGE_UP)) {
+		params[1] += 5;
+	}
+	if (IsKeyPressed(KEY_PAGE_DOWN) && params[1] > 0) {
+		params[1] -= 5;
 	}
 }
 
@@ -291,6 +272,9 @@ void DrawGameModeParams(int params[2], GameMode mode, int fontSize) {
 		DrawTextPro(GetFontDefault(), TextFormat("Timer: %d", params[0]), (Vector2) { GetScreenWidth() / 2, GetScreenHeight() / 3 + (fontSize) + (fontSize * 2) }, (Vector2) { (TextLength(TextFormat("Timer: %d", params[0])) * (fontSize)) / 4, 0 }, 0.f, fontSize, fontSize / 10, RAYWHITE);
 		DrawTextPro(GetFontDefault(), TextFormat("Snowball Limit: %d", params[1]), (Vector2) { GetScreenWidth() / 2, GetScreenHeight() / 3 + (fontSize * 4) }, (Vector2) { (TextLength(TextFormat("Snowball Limit: %d", params[1])) * (fontSize)) / 4, 0 }, 0.f, fontSize, fontSize / 10, RAYWHITE);
 		break;
+	case GM_TEAM_FORT:
+		DrawTextPro(GetFontDefault(), TextFormat("Timer: %d", params[0]), (Vector2) { GetScreenWidth() / 2, GetScreenHeight() / 3 + (fontSize)+(fontSize * 2) }, (Vector2) { (TextLength(TextFormat("Timer: %d", params[0])) * (fontSize)) / 4, 0 }, 0.f, fontSize, fontSize / 10, RAYWHITE);
+		DrawTextPro(GetFontDefault(), TextFormat("Fort Health: %d", params[1]), (Vector2) { GetScreenWidth() / 2, GetScreenHeight() / 3 + (fontSize * 4) }, (Vector2) { (TextLength(TextFormat("Fort Health: %d", params[1])) * (fontSize)) / 4, 0 }, 0.f, fontSize, fontSize / 10, RAYWHITE);
 	default:
 		break;
 	}

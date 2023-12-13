@@ -2,11 +2,12 @@
 #include "player.h"
 #include "snowball.h"
 #include "menu.h"
+#include "fort.h"
 
 #define MAX_SNOWBALLS 16
 
 void GameLoop() {
-	bool GameModeUpdate(GameMode mode, Player * players, int params[2], float timer, int numPlayers, int* winner);
+	bool GameModeUpdate(GameMode mode, Player * players, Fort * forts, int params[2], float timer, int numPlayers, int* winner);
 
 	// Init vars
 
@@ -38,12 +39,19 @@ void GameLoop() {
 		snowballs[i].active = false;
 	}
 
+	
+
 	// Moon vars
 	float moonRadius = GetScreenHeight() / 2.f - (GetScreenHeight() * 0.15f);
 	Vector2 moonCenter = {  GetScreenWidth() / 2.f, GetScreenHeight() / 2.f };
 	int moonRadiusAdjust = GetScreenWidth() / 384;
 	int playerSize = moonRadius / 5;
 	int fontSize = GetScreenHeight() / 40.f;
+	
+	// Fort vars
+	Fort forts[2];
+	CreateFort(&forts[0], config.modeParams[1], RED, 0, (Vector2) { moonCenter.x - playerSize, (moonCenter.y - moonRadius) - playerSize * 1.75f }, playerSize * 2, false);
+	CreateFort(&forts[1], config.modeParams[1], BLUE, 1, (Vector2) { moonCenter.x - playerSize, (moonCenter.y + moonRadius) - playerSize * 0.25f }, playerSize * 2, true);
 
 	// Player vars
 	Player players[8];
@@ -66,11 +74,11 @@ void GameLoop() {
 
 			// Update Snowballs
 			for (int i = 0; i < MAX_SNOWBALLS; i++) {
-				UpdateSnowball(&snowballs[i], players, 4, playerSize, moonRadius - moonRadiusAdjust, moonCenter, delta);
+				UpdateSnowball(&snowballs[i], players, forts, config.mode, 4, playerSize, moonRadius - moonRadiusAdjust, moonCenter, delta);
 			}
 
 			int winner = -1;
-			if (GameModeUpdate(config.mode, players, config.modeParams, timer, config.numPlayers, &winner)) {
+			if (GameModeUpdate(config.mode, players, forts, config.modeParams, timer, config.numPlayers, &winner)) {
 				gameEnd = true; gameWinner = winner;
 			}
 
@@ -80,6 +88,13 @@ void GameLoop() {
 
 			// Draw Space Background
 			DrawTextureRec(spaceTex, (Rectangle) { 0, 0, GetScreenWidth(), GetScreenHeight() }, (Vector2) { 0, 0 }, RAYWHITE);
+			
+			// Draw Forts
+			if (config.mode == GM_TEAM_FORT) {
+				for (int i = 0; i < 2; i++) {
+					DrawFort(&forts[i], playerTex, delta);
+				}
+			}
 
 			// Draw Moon 
 			DrawTexturePro(moonTex, (Rectangle) { 0, 0, moonTex.width, moonTex.height }, (Rectangle) { moonCenter.x - moonRadius, moonCenter.y - moonRadius, moonRadius * 2, moonRadius * 2 }, (Vector2) { 0, 0 }, 0.f, RAYWHITE);
@@ -89,6 +104,7 @@ void GameLoop() {
 				DrawPlayer(&players[i], moonCenter, moonRadius - moonRadiusAdjust, playerTex, arrowTex, playerSize, delta, config.mode);
 			}
 
+			
 			// Draw Snowballs
 			for (int i = 0; i < MAX_SNOWBALLS; i++) {
 				DrawSnowball(&snowballs[i], moonCenter, moonRadius - moonRadiusAdjust);
@@ -110,6 +126,13 @@ void GameLoop() {
 			// Draw Space Background
 			DrawTextureRec(spaceTex, (Rectangle) { 0, 0, GetScreenWidth(), GetScreenHeight() }, (Vector2) { 0, 0 }, RAYWHITE);
 
+			// Draw Forts
+			if (config.mode == GM_TEAM_FORT) {
+				for (int i = 0; i < 2; i++) {
+					DrawFort(&forts[i], playerTex, delta);
+				}
+			}
+
 			// Draw Moon 
 			DrawTexturePro(moonTex, (Rectangle) { 0, 0, moonTex.width, moonTex.height }, (Rectangle) { moonCenter.x - moonRadius, moonCenter.y - moonRadius, moonRadius * 2, moonRadius * 2 }, (Vector2) { 0, 0 }, 0.f, RAYWHITE);
 
@@ -130,7 +153,12 @@ void GameLoop() {
 			}
 
 			// Draw Result
-			DrawTextPro(GetFontDefault(), TextFormat("Player %d Wins!", gameWinner + 1), (Vector2) { GetScreenWidth() / 2.f, GetScreenHeight() / 2.f }, (Vector2) { ((TextLength(TextFormat("Player %d Wins!", gameWinner + 1)) - 1) * (fontSize * 4)) / 4, fontSize }, 0.f, fontSize * 4, fontSize / 10, players[gameWinner].colour);
+			if (config.mode == GM_TEAM_FORT) {
+				DrawTextPro(GetFontDefault(), TextFormat("Team %d Wins!", gameWinner + 1), (Vector2) { GetScreenWidth() / 2.f, GetScreenHeight() / 2.f }, (Vector2) { ((TextLength(TextFormat("Team %d Wins!", gameWinner + 1)) - 1) * (fontSize * 4)) / 4, fontSize }, 0.f, fontSize * 4, fontSize / 10, forts[gameWinner].teamColour);
+			}
+			else {
+				DrawTextPro(GetFontDefault(), TextFormat("Player %d Wins!", gameWinner + 1), (Vector2) { GetScreenWidth() / 2.f, GetScreenHeight() / 2.f }, (Vector2) { ((TextLength(TextFormat("Player %d Wins!", gameWinner + 1)) - 1) * (fontSize * 4)) / 4, fontSize }, 0.f, fontSize * 4, fontSize / 10, players[gameWinner].colour);
+			}
 
 			EndDrawing();
 		}
@@ -141,7 +169,7 @@ void GameLoop() {
 	UnloadTexture(spaceTex);
 }
 
-bool GameModeUpdate(GameMode mode, Player* players, int params[2], float timer, int numPlayers, int* winner) {
+bool GameModeUpdate(GameMode mode, Player* players, Fort* forts, int params[2], float timer, int numPlayers, int* winner) {
 	bool gameEnd = false;
 	int max = players[0].score;
 	int maxId = 0;
@@ -175,6 +203,12 @@ bool GameModeUpdate(GameMode mode, Player* players, int params[2], float timer, 
 		}
 		break;
 	case GM_TEAM_FORT:
+		for (int i = 0; i < 2; i++) {
+			if (forts[i].health <= 0) {
+				*winner = !i;
+				gameEnd = true;
+			}
+		}
 		break;
 	}
 

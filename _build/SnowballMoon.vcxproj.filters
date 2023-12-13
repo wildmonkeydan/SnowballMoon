@@ -30,6 +30,9 @@
     <ClCompile Include="..\game\src\menu.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\game\src\fort.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\game\src\game.h">
@@ -54,6 +57,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\game\src\JoyShock\JoyShockLibrary.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game\src\fort.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

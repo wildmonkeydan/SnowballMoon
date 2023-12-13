@@ -32,7 +32,7 @@ void CreateSnowballGravity(Snowball* sb, int owner, float angle, Vector2 moonMid
 	sb->active = true;
 }
 
-void UpdateSnowball(Snowball* sb, Player* players, int numPlayers, int playerSize, float moonRadius, Vector2 moonMiddle, float delta) {
+void UpdateSnowball(Snowball* sb, Player* players, Fort* forts, GameMode mode, int numPlayers, int playerSize, float moonRadius, Vector2 moonMiddle, float delta) {
 	if (sb->active) {
 
 		if (sb->type == SPT_STRAIGHT) {
@@ -44,10 +44,11 @@ void UpdateSnowball(Snowball* sb, Player* players, int numPlayers, int playerSiz
 				sb->active = false;
 			}
 
+			Vector2 snowballPos = (Vector2){ ((moonRadius + sb->height) * cosf(DEG2RAD * sb->angle)) + moonMiddle.x, ((moonRadius + sb->height) * sinf(DEG2RAD * sb->angle)) + moonMiddle.y };
+
+
 			for (int i = 0; i < numPlayers; i++) {
-				Vector2 snowballPos = (Vector2){ ((moonRadius + sb->height) * cosf(DEG2RAD * sb->angle)) + moonMiddle.x, ((moonRadius + sb->height) * sinf(DEG2RAD * sb->angle)) + moonMiddle.y };
-
-
+	
 				if (CheckCollisionPointTriangle(snowballPos, players[i].collisionPoly[1], players[i].collisionPoly[0], players[i].collisionPoly[3])
 					|| CheckCollisionPointTriangle(snowballPos, players[i].collisionPoly[3], players[i].collisionPoly[2], players[i].collisionPoly[1])) {
 					sb->active = false;
@@ -61,6 +62,30 @@ void UpdateSnowball(Snowball* sb, Player* players, int numPlayers, int playerSiz
 
 					players[i].state = PS_HIT;
 					players[i].stateTimer = 0;
+				}
+			}
+
+			if (mode == GM_TEAM_FORT) {
+
+				for (int i = 0; i < 2; i++) {
+					Rectangle fortCol = { 0 };
+
+					if (forts[i].pos.height > 0) {
+						fortCol = forts[i].pos;
+					}
+					else {
+						fortCol.x = forts[i].pos.x;
+						fortCol.y = forts[i].pos.y + forts[i].pos.height;
+
+						fortCol.height = -forts[i].pos.height;
+						fortCol.width = -forts[i].pos.height;
+					}
+
+					if (CheckCollisionPointRec(snowballPos, fortCol) && forts->health > 0) {
+						sb->active = false;
+
+						forts[i].health--;
+					}
 				}
 			}
 
@@ -109,6 +134,30 @@ void UpdateSnowball(Snowball* sb, Player* players, int numPlayers, int playerSiz
 
 						players[i].state = PS_HIT;
 						players[i].stateTimer = 0;
+					}
+				}
+
+				if (mode == GM_TEAM_FORT) {
+
+					for (int i = 0; i < 2; i++) {
+						Rectangle fortCol = { 0 };
+
+						if (forts[i].pos.height > 0) {
+							fortCol = forts[i].pos;
+						}
+						else {
+							fortCol.x = forts[i].pos.x;
+							fortCol.y = forts[i].pos.y + forts[i].pos.height;
+
+							fortCol.height = -forts[i].pos.height;
+							fortCol.width = -forts[i].pos.height;
+						}
+
+						if (CheckCollisionPointRec(sb->position, fortCol) && forts->health > 0) {
+							sb->active = false;
+
+							forts[i].health--;
+						}
 					}
 				}
 			}

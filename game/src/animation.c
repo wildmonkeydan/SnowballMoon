@@ -8,6 +8,7 @@ Animation playerCrouch = { 24, 8, 1 };
 Animation playerThrow = { 24, 21, 3 };
 Animation playerHitFront = { 24, 18, 4 };
 Animation playerPickup = { 12, 13, 5 };
+Animation fortFlag = { 15, 6, 6 };
 
 Vector2 animation_AnimateDef(DefinedAnimations anim, AnimContext* ctx, float delta) {
 	Animation* ref;
@@ -31,12 +32,19 @@ Vector2 animation_AnimateDef(DefinedAnimations anim, AnimContext* ctx, float del
 	case DA_PICKUP:
 		ref = &playerPickup;
 		break;
+	case DA_FLAG:
+		ref = &fortFlag;
+		break;
 	default:
 		ref = &playerIdle;
 		break;
 	}
 
 	Vector2 uvCoords = { ctx->currentFrame * 128, ref->animLane * 128 };
+
+	if (ref->animLane == 6) {
+		uvCoords.x = ctx->currentFrame * 256;
+	}
 
 	if (ctx->currentFrame < ref->length) {
 		if (ctx->timer >= (1 / (float)ref->fps)) {

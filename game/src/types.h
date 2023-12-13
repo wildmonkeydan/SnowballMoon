@@ -13,7 +13,8 @@ typedef enum DefinedAnimations{
 	DA_PLAYERCROUCH,
 	DA_THROW,
 	DA_HITFRONT,
-	DA_PICKUP
+	DA_PICKUP,
+	DA_FLAG
 }DefinedAnimations;
 
 /// <summary>
@@ -67,6 +68,7 @@ typedef struct Player{
 	int score;
 	int id; // Input ID
 	int playerId; // Player ID
+	unsigned char team;
 	AnimContext ctx;
 	Vector2 collisionPoly[4];
 }Player;
@@ -119,3 +121,15 @@ typedef enum GameMode {
 	GM_HOARDER,
 	GM_TEAM_FORT
 }GameMode;
+
+/// <summary>
+/// Fort data type, contains all relevant data
+/// </summary>
+typedef struct Fort {
+	int health;
+	Color teamColour;
+	int teamId;
+	bool flipped;
+	Rectangle pos;
+	AnimContext ctx;
+}Fort;
