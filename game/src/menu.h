@@ -7,6 +7,7 @@ typedef struct MenuConfig {
 	int numPlayers;
 	PlayerInputConfig playerConfig[8];
 	Color playerColours[8];
+	unsigned char playerTeams[8];
 	GameMode mode;
 	int modeParams[2];
 }MenuConfig;

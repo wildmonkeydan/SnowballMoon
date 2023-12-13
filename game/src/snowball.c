@@ -84,7 +84,16 @@ void UpdateSnowball(Snowball* sb, Player* players, Fort* forts, GameMode mode, i
 					if (CheckCollisionPointRec(snowballPos, fortCol) && forts->health > 0) {
 						sb->active = false;
 
-						forts[i].health--;
+						if (forts[i].teamId == players[sb->owner].team) {
+							forts[i].health++;
+							
+							if (forts[i].health > forts[i].maxHealth) {
+								forts[i].health = forts[i].maxHealth;
+							}
+						}
+						else {
+							forts[i].health--;
+						}
 					}
 				}
 			}

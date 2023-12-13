@@ -57,7 +57,7 @@ void GameLoop() {
 	Player players[8];
 	
 	for (int i = 0; i < config.numPlayers; i++) {
-		CreatePlayer(&players[i], playerSize, config.playerConfig[i], i);
+		CreatePlayer(&players[i], playerSize, config.playerConfig[i], i, config.playerTeams[i]);
 		players[i].angle = i * 30;
 		players[i].colour = config.playerColours[i];
 	}
@@ -92,7 +92,7 @@ void GameLoop() {
 			// Draw Forts
 			if (config.mode == GM_TEAM_FORT) {
 				for (int i = 0; i < 2; i++) {
-					DrawFort(&forts[i], playerTex, delta);
+					DrawFort(&forts[i], playerTex, delta, fontSize);
 				}
 			}
 
@@ -129,7 +129,7 @@ void GameLoop() {
 			// Draw Forts
 			if (config.mode == GM_TEAM_FORT) {
 				for (int i = 0; i < 2; i++) {
-					DrawFort(&forts[i], playerTex, delta);
+					DrawFort(&forts[i], playerTex, delta, fontSize);
 				}
 			}
 

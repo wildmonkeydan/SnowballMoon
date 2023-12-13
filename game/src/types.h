@@ -127,6 +127,7 @@ typedef enum GameMode {
 /// </summary>
 typedef struct Fort {
 	int health;
+	int maxHealth;
 	Color teamColour;
 	int teamId;
 	bool flipped;

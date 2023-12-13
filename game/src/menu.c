@@ -117,6 +117,20 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D moonTex, Texture2D spaceTex) 
 		SelectGameMode(&config.mode);
 		UpdateGameModeParams(config.modeParams, config.mode);
 
+		if (config.mode == GM_TEAM_FORT) {
+			int split = (config.numPlayers / 2);
+
+			for (int i = 0; i < config.numPlayers; i++) {
+				if (i < split) {
+					config.playerTeams[i] = 0;
+				}
+				else
+				{
+					config.playerTeams[i] = 1;
+				}
+			}
+		}
+
 		// Animate the characters
 		Vector2 uv = animation_AnimateDef(DA_PLAYERIDLE, &idleCtx, GetFrameTime());
 
@@ -142,6 +156,10 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D moonTex, Texture2D spaceTex) 
 				int blockX = playerBlockOffset.x + (i * playerBlockSize) + ((playerBlockSize / 8) * i);
 
 				DrawTexturePro(playerTex, (Rectangle) { uv.x, uv.y, 128, 128 }, (Rectangle) { blockX, playerBlockOffset.y - playerBlockSize, playerBlockSize, playerBlockSize }, (Vector2) { 0, 0 }, 0.f, blocks[i].chosenColour);
+
+				if (config.mode == GM_TEAM_FORT) {
+					DrawRectangle(blockX, playerBlockOffset.y, playerBlockSize, playerBlockSize, config.playerTeams[i] ? BLUE : RED);
+				}
 
 				DrawRectangleRounded((Rectangle) { blockX, playerBlockOffset.y, playerBlockSize, playerBlockSize }, playerBlockSize / 800.f, 3, blocks[i].ready ? GREEN : GRAY);
 				char controlType[16] = "Controller ";
