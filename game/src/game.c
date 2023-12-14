@@ -9,7 +9,9 @@
 void GameLoop() {
 	bool GameModeUpdate(GameMode mode, Player * players, Fort * forts, int params[2], float timer, int numPlayers, int* winner);
 
+	// =========
 	// Init vars
+	// =========
 
 	float timer = 0.f;
 	bool gameEnd = false;
@@ -17,18 +19,19 @@ void GameLoop() {
 
 	// Texture vars
 	Texture2D playerTex = LoadTexture("PlayerSprites.png");
-	SetTextureFilter(playerTex, TEXTURE_FILTER_TRILINEAR);
+	SetTextureFilter(playerTex, TEXTURE_FILTER_POINT);
 
 	Texture2D moonTex = LoadTexture("Moon.png");
-	SetTextureFilter(moonTex, TEXTURE_FILTER_TRILINEAR);
+	SetTextureFilter(moonTex, TEXTURE_FILTER_POINT);
 
 	Texture2D spaceTex = LoadTexture("Space.png");
 	SetTextureFilter(spaceTex, TEXTURE_FILTER_TRILINEAR);
 	SetTextureWrap(spaceTex, TEXTURE_WRAP_REPEAT);
 
 	Texture2D arrowTex = LoadTexture("Arrow.png");
-	SetTextureFilter(spaceTex, TEXTURE_FILTER_TRILINEAR);
+	SetTextureFilter(spaceTex, TEXTURE_FILTER_POINT);
 
+	// Load into menu
 	MenuConfig config = MenuLoop(playerTex, spaceTex);
 
 	// Snowball vars
@@ -38,8 +41,6 @@ void GameLoop() {
 	for (int i = 0; i < MAX_SNOWBALLS; i++) {
 		snowballs[i].active = false;
 	}
-
-	
 
 	// Moon vars
 	float moonRadius = GetScreenHeight() / 2.f - (GetScreenHeight() * 0.15f);
@@ -61,6 +62,10 @@ void GameLoop() {
 		players[i].angle = i * 30;
 		players[i].colour = config.playerColours[i];
 	}
+
+	//===========
+	// Main Loop
+	//===========
 
 	while (!WindowShouldClose()) {
 		float delta = GetFrameTime();
@@ -184,6 +189,10 @@ void GameLoop() {
 			EndDrawing();
 		}
 	}
+
+	//=================
+	// Quit and Unload
+	//=================
 
 	UnloadTexture(playerTex);
 	UnloadTexture(moonTex);
