@@ -79,7 +79,7 @@ void GameLoop() {
 
 			int winner = -1;
 			if (GameModeUpdate(config.mode, players, forts, config.modeParams, timer, config.numPlayers, &winner)) {
-				gameEnd = true; gameWinner = winner;
+				gameEnd = true; gameWinner = winner; timer = 0;
 			}
 
 			BeginDrawing();
@@ -119,6 +119,23 @@ void GameLoop() {
 			EndDrawing();
 		}
 		else {
+			if (timer > 10) {
+				gameEnd = false;
+				timer = 0;
+
+				for (int i = 0; i < config.numPlayers; i++) {
+					DestroyPlayer(&players[i]);
+				}
+
+				config = MenuLoop(playerTex, moonTex, spaceTex);
+
+				for (int i = 0; i < config.numPlayers; i++) {
+					CreatePlayer(&players[i], playerSize, config.playerConfig[i], i, config.playerTeams[i]);
+					players[i].angle = i * 30;
+					players[i].colour = config.playerColours[i];
+				}
+			}
+
 			BeginDrawing();
 
 			ClearBackground(BLACK);
