@@ -134,6 +134,10 @@ void GameLoop() {
 					players[i].angle = i * 30;
 					players[i].colour = config.playerColours[i];
 				}
+
+				for (int i = 0; i < MAX_SNOWBALLS; i++) {
+					snowballs[i].active = false;
+				}
 			}
 
 			BeginDrawing();

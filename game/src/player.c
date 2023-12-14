@@ -167,7 +167,7 @@ int UpdatePlayer(Player* player, int playerSize, float delta, Snowball* sb, int 
 		}
 
 		if (!input_GetButton(GI_ATTACK, player->id)) {
-
+			player->throwing = true;
 			player->state = PS_THROW_GRAVITY;
 		}
 		break;
@@ -178,7 +178,7 @@ int UpdatePlayer(Player* player, int playerSize, float delta, Snowball* sb, int 
 			player->angle += (PLAYER_STEP)*player->flipped ? -1 : 1;
 		}
 
-		if (player->stateTimer >= 1.1f && player->snowballCount > 0) {
+		if (player->stateTimer >= 1.1f && player->snowballCount > 0 && player->throwing) {
 			CreateSnowballGravity(&sb[nextSnowball], player->playerId, player->angle + (player->flipped ? -5.f : 5.f), moonMiddle, moonRadius, Vector2Rotate((Vector2) { player->flipped ? -1.f : 1.f, player->flipped ? -1.f : 1.f }, ((player->angle) + player->snowballAngle)* DEG2RAD), playerSize);
 
 			nextSnowball++;

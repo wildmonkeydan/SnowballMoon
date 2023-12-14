@@ -61,20 +61,22 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D spaceTex) {
 		}
 		
 		for (int i = 0; i < config.numPlayers; i++) {
-			if (input_GetButtonPressed(GI_ATTACK, config.playerConfig[i])) {
-				blocks[i].ready = !blocks[i].ready;
-			}
+			if (blocks[i].active) {
+				if (input_GetButtonPressed(GI_ATTACK, config.playerConfig[i])) {
+					blocks[i].ready = !blocks[i].ready;
+				}
 
-			Color change = PlayerSelectColour(&blocks[i]);
-			
+				Color change = PlayerSelectColour(&blocks[i]);
 
-			if (change.a != 0) {
-				blocks[i].chosenColour = change;
-				if (blocks[i].playstationControllerId != -1) {
-					Color mix = ColorBrightness(change, -0.5f);
-					mix = (Color){ 0, change.r, change.g, change.b };
 
-					JslSetLightColour(i, ColorToInt(mix));
+				if (change.a != 0) {
+					blocks[i].chosenColour = change;
+					if (blocks[i].playstationControllerId != -1) {
+						Color mix = ColorBrightness(change, -0.5f);
+						mix = (Color){ 0, change.r, change.g, change.b };
+
+						JslSetLightColour(i, ColorToInt(mix));
+					}
 				}
 			}
 		}
@@ -144,7 +146,7 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D spaceTex) {
 		DrawTextureRec(spaceTex, (Rectangle) { 0, 0, GetScreenWidth(), GetScreenHeight() }, (Vector2) { 0, 0 }, RAYWHITE);
 
 		// Draw Logo
-		DrawTexturePro(logoTex, (Rectangle) { 0, 0, logoTex.width, logoTex.height }, (Rectangle) { GetScreenWidth() / 2, GetScreenHeight() / 15, 740, 416 }, (Vector2) { 370, 0 }, 0.f, RAYWHITE);
+		DrawTexturePro(logoTex, (Rectangle) { 0, 0, logoTex.width, logoTex.height }, (Rectangle) { GetScreenWidth() / 2, GetScreenHeight() / 15, GetScreenHeight() * 0.513f, GetScreenHeight() * 0.288f }, (Vector2) { 370, 0 }, 0.f, RAYWHITE);
 
 		// Draw Round Info
 		DrawTextPro(GetFontDefault(), GetTextFromGameMode(config.mode), (Vector2) { GetScreenWidth() / 2, GetScreenHeight() / 3 }, (Vector2) { (TextLength(GetTextFromGameMode(config.mode)) * (fontSize * 2)) / 4, 0 }, 0.f, fontSize * 2, fontSize / 10, RAYWHITE);
