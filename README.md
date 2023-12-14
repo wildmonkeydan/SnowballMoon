@@ -11,7 +11,10 @@ Controllers or keyboard can be used, with keyboard using either the arrow keys, 
 Throw snowballs at each other, most hits wins
 
 ## Hoarder
+Collect enough snowballs, if you get hit you lose a snowball
 
+## Team Fort
+Work in teams to maintain your team's fort and destroy the other team's fort
 
 # Building
 Double click the .sln file that was generated in the folder. From here you can use the project as normal.  
