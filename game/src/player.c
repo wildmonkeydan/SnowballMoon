@@ -10,7 +10,7 @@
 #define MAX_SNOWBALLS 16
 
 #define NORM_COLLISION (Rectangle){ 0, 0, playerSize / 2, playerSize }
-#define CROUCH_COLLISION (Rectangle) { 0, -playerSize / 2, playerSize / 2, playerSize / 2}
+#define CROUCH_COLLISION (Rectangle) { 0, -playerSize / 2, playerSize / 2, playerSize / 2 }
 #define NO_COLLISION (Rectangle) { 0, 0, 0, 0};
 
 void CreatePlayer(Player* player, int playerSize, int id, int playerId, unsigned char team) {

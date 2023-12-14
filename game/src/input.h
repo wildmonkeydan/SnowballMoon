@@ -71,5 +71,13 @@ bool input_GetButtonUp(GameInput button, int id);
 /// </returns>
 bool input_GetButton(GameInput button, int id);
 
-
+/// <summary>
+/// Get if the current PlayerInputConfig is being pressed 
+/// </summary>
+/// <param name="config:">
+/// The PlayerInputConfig to check inputs from
+/// </param>
+/// <returns>
+/// If the PlayerInputConfig has been pressed
+/// </returns>
 bool input_DetectInputConfig(PlayerInputConfig* config);

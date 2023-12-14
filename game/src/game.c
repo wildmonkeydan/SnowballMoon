@@ -29,7 +29,7 @@ void GameLoop() {
 	Texture2D arrowTex = LoadTexture("Arrow.png");
 	SetTextureFilter(spaceTex, TEXTURE_FILTER_TRILINEAR);
 
-	MenuConfig config = MenuLoop(playerTex, moonTex, spaceTex);
+	MenuConfig config = MenuLoop(playerTex, spaceTex);
 
 	// Snowball vars
 	Snowball snowballs[MAX_SNOWBALLS];
@@ -127,7 +127,7 @@ void GameLoop() {
 					DestroyPlayer(&players[i]);
 				}
 
-				config = MenuLoop(playerTex, moonTex, spaceTex);
+				config = MenuLoop(playerTex, spaceTex);
 
 				for (int i = 0; i < config.numPlayers; i++) {
 					CreatePlayer(&players[i], playerSize, config.playerConfig[i], i, config.playerTeams[i]);
@@ -186,6 +186,33 @@ void GameLoop() {
 	UnloadTexture(spaceTex);
 }
 
+/// <summary>
+/// Check if the game has ended as dictated by the Game Mode
+/// </summary>
+/// <param name="mode:">
+/// Current Game Mode
+/// </param>
+/// <param name="players:">
+/// Pointer to array of players
+/// </param>
+/// <param name="forts:">
+/// Pointer to array of forts
+/// </param>
+/// <param name="params:">
+/// Game Mode parameters
+/// </param>
+/// <param name="timer:">
+/// Current game timer
+/// </param>
+/// <param name="numPlayers:">
+/// Number of players
+/// </param>
+/// <param name="winner:">
+/// Set this to winning player/team
+/// </param>
+/// <returns>
+/// If the game is over
+/// </returns>
 bool GameModeUpdate(GameMode mode, Player* players, Fort* forts, int params[2], float timer, int numPlayers, int* winner) {
 	bool gameEnd = false;
 	int max = players[0].score;
