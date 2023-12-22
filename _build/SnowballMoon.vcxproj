@@ -267,6 +267,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\game\src\animation.c" />
+    <ClCompile Include="..\game\src\error.c" />
     <ClCompile Include="..\game\src\fort.c" />
     <ClCompile Include="..\game\src\game.c" />
     <ClCompile Include="..\game\src\input.c" />
@@ -277,12 +278,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\game\src\animation.h" />
+    <ClInclude Include="..\game\src\error.h" />
     <ClInclude Include="..\game\src\fort.h" />
     <ClInclude Include="..\game\src\game.h" />
     <ClInclude Include="..\game\src\input.h" />
     <ClInclude Include="..\game\src\JoyShock\JoyShockLibrary.h" />
     <ClInclude Include="..\game\src\menu.h" />
     <ClInclude Include="..\game\src\player.h" />
+    <ClInclude Include="..\game\src\rres\rres-raylib.h" />
+    <ClInclude Include="..\game\src\rres\rres.h" />
     <ClInclude Include="..\game\src\snowball.h" />
     <ClInclude Include="..\game\src\types.h" />
   </ItemGroup>

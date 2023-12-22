@@ -2,6 +2,7 @@
 #include "types.h"
 #include "animation.h"
 #include "JoyShock/JoyShockLibrary.h"
+#include "error.h"
 
 MenuConfig MenuLoop(Texture2D playerTex, Texture2D moonTex, Texture2D spaceTex) {
 	Color GetPlayerColourFromIndex(int index);
@@ -38,6 +39,12 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D moonTex, Texture2D spaceTex) 
 	int fontSize = GetScreenHeight() / 40.f;
 
 	Texture2D logoTex = LoadTexture("Logo.png");
+
+	if (logoTex.id == NULL) {
+		ErrorTrap(ERROR_LOADING, "Could not load Logo.png");
+		config.numPlayers = -1;
+		return config;
+	}
 
 	int numPlaystation = JslConnectDevices();
 	TraceLog(LOG_INFO, "Num Playstation Controllers: %d", numPlaystation);

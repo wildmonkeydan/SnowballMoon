@@ -33,6 +33,9 @@
     <ClCompile Include="..\game\src\fort.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\game\src\error.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\game\src\game.h">
@@ -60,6 +63,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\game\src\fort.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game\src\rres\rres.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game\src\rres\rres-raylib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game\src\error.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

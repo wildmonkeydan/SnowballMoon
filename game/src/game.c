@@ -1,8 +1,10 @@
 #include <raylib.h>
+
 #include "player.h"
 #include "snowball.h"
 #include "menu.h"
 #include "fort.h"
+#include "error.h"
 
 #define MAX_SNOWBALLS 16
 
@@ -19,17 +21,52 @@ void GameLoop() {
 	Texture2D playerTex = LoadTexture("PlayerSprites.png");
 	SetTextureFilter(playerTex, TEXTURE_FILTER_TRILINEAR);
 
+	if (playerTex.id == NULL) {
+		ErrorTrap(ERROR_LOADING, "Could not load PlayerSprites.png");
+		return;
+	}
+
 	Texture2D moonTex = LoadTexture("Moon.png");
 	SetTextureFilter(moonTex, TEXTURE_FILTER_TRILINEAR);
+
+	if (moonTex.id == NULL) {
+		ErrorTrap(ERROR_LOADING, "Could not load Moon.png");
+		UnloadTexture(playerTex);
+		return;
+	}
 
 	Texture2D spaceTex = LoadTexture("Space.png");
 	SetTextureFilter(spaceTex, TEXTURE_FILTER_TRILINEAR);
 	SetTextureWrap(spaceTex, TEXTURE_WRAP_REPEAT);
 
+	if (spaceTex.id == NULL) {
+		ErrorTrap(ERROR_LOADING, "Could not load Space.png");
+		UnloadTexture(playerTex);
+		UnloadTexture(moonTex);
+		return;
+	}
+
 	Texture2D arrowTex = LoadTexture("Arrow.png");
 	SetTextureFilter(spaceTex, TEXTURE_FILTER_TRILINEAR);
 
+	if (arrowTex.id == NULL) {
+		ErrorTrap(ERROR_LOADING, "Could not load Arrow.png");
+		UnloadTexture(playerTex);
+		UnloadTexture(moonTex);
+		UnloadTexture(spaceTex);
+		return;
+	}
+
 	MenuConfig config = MenuLoop(playerTex, moonTex, spaceTex);
+
+	if (config.numPlayers == -1) {
+		UnloadTexture(playerTex);
+		UnloadTexture(moonTex);
+		UnloadTexture(spaceTex);
+		UnloadTexture(arrowTex);
+
+		return;
+	}
 
 	// Snowball vars
 	Snowball snowballs[MAX_SNOWBALLS];
@@ -80,6 +117,13 @@ void GameLoop() {
 			int winner = -1;
 			if (GameModeUpdate(config.mode, players, forts, config.modeParams, timer, config.numPlayers, &winner)) {
 				gameEnd = true; gameWinner = winner;
+				if (winner == -1) {
+					UnloadTexture(playerTex);
+					UnloadTexture(moonTex);
+					UnloadTexture(spaceTex);
+					UnloadTexture(arrowTex);
+					return;
+				}
 			}
 
 			BeginDrawing();
@@ -167,6 +211,7 @@ void GameLoop() {
 	UnloadTexture(playerTex);
 	UnloadTexture(moonTex);
 	UnloadTexture(spaceTex);
+	UnloadTexture(arrowTex);
 }
 
 bool GameModeUpdate(GameMode mode, Player* players, Fort* forts, int params[2], float timer, int numPlayers, int* winner) {
@@ -209,6 +254,11 @@ bool GameModeUpdate(GameMode mode, Player* players, Fort* forts, int params[2], 
 				gameEnd = true;
 			}
 		}
+		break;
+	default:
+		ErrorTrap(ERROR_GAMELOGIC, "Invalid GameMode! Corruption may have occured");
+		gameEnd = true;
+		*winner = -1;
 		break;
 	}
 
