@@ -6,6 +6,16 @@ A small multiplayer game where you throw snowballs at each other on a snow-cover
 Tap the attack button to throw a snowball normally or hold it down to adjust the angle to throw. 
 Controllers or keyboard can be used, with keyboard using either the arrow keys, WASD, IJKL, or the numpad
 
+# Game Modes
+## Free-for-all
+Throw snowballs at each other, most hits wins
+
+## Hoarder
+Collect enough snowballs, if you get hit you lose a snowball
+
+## Team Fort
+Work in teams to maintain your team's fort and destroy the other team's fort
+
 # Building
 Double click the .sln file that was generated in the folder. From here you can use the project as normal.  
 Place the latest version of raylib in a folder called raylib-master at the base directory

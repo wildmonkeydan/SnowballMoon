@@ -48,7 +48,8 @@ typedef enum PlayerState{
 	PS_THROW,
 	PS_RUN,
 	PS_HIT,
-	PS_AIM
+	PS_AIM,
+	PS_THROW_GRAVITY
 }PlayerState;
 
 /// <summary>

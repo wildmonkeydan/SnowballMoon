@@ -4,7 +4,7 @@
 #include "JoyShock/JoyShockLibrary.h"
 #include "error.h"
 
-MenuConfig MenuLoop(Texture2D playerTex, Texture2D moonTex, Texture2D spaceTex) {
+MenuConfig MenuLoop(Texture2D playerTex, Texture2D spaceTex) {
 	Color GetPlayerColourFromIndex(int index);
 	Color PlayerSelectColour(PlayerBlock* block);
 	const char* GetTextFromGameMode(GameMode mode);
@@ -68,20 +68,22 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D moonTex, Texture2D spaceTex) 
 		}
 		
 		for (int i = 0; i < config.numPlayers; i++) {
-			if (input_GetButtonPressed(GI_ATTACK, config.playerConfig[i])) {
-				blocks[i].ready = !blocks[i].ready;
-			}
+			if (blocks[i].active) {
+				if (input_GetButtonPressed(GI_ATTACK, config.playerConfig[i])) {
+					blocks[i].ready = !blocks[i].ready;
+				}
 
-			Color change = PlayerSelectColour(&blocks[i]);
-			
+				Color change = PlayerSelectColour(&blocks[i]);
 
-			if (change.a != 0) {
-				blocks[i].chosenColour = change;
-				if (blocks[i].playstationControllerId != -1) {
-					Color mix = ColorBrightness(change, -0.5f);
-					mix = (Color){ 0, change.r, change.g, change.b };
 
-					JslSetLightColour(i, ColorToInt(mix));
+				if (change.a != 0) {
+					blocks[i].chosenColour = change;
+					if (blocks[i].playstationControllerId != -1) {
+						Color mix = ColorBrightness(change, -0.5f);
+						mix = (Color){ 0, change.r, change.g, change.b };
+
+						JslSetLightColour(i, ColorToInt(mix));
+					}
 				}
 			}
 		}
@@ -151,7 +153,7 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D moonTex, Texture2D spaceTex) 
 		DrawTextureRec(spaceTex, (Rectangle) { 0, 0, GetScreenWidth(), GetScreenHeight() }, (Vector2) { 0, 0 }, RAYWHITE);
 
 		// Draw Logo
-		DrawTexturePro(logoTex, (Rectangle) { 0, 0, logoTex.width, logoTex.height }, (Rectangle) { GetScreenWidth() / 2, GetScreenHeight() / 15, 740, 416 }, (Vector2) { 370, 0 }, 0.f, RAYWHITE);
+		DrawTexturePro(logoTex, (Rectangle) { 0, 0, logoTex.width, logoTex.height }, (Rectangle) { GetScreenWidth() / 2, GetScreenHeight() / 15, GetScreenHeight() * 0.513f, GetScreenHeight() * 0.288f }, (Vector2) { 416, 0 }, 0.f, RAYWHITE);
 
 		// Draw Round Info
 		DrawTextPro(GetFontDefault(), GetTextFromGameMode(config.mode), (Vector2) { GetScreenWidth() / 2, GetScreenHeight() / 3 }, (Vector2) { (TextLength(GetTextFromGameMode(config.mode)) * (fontSize * 2)) / 4, 0 }, 0.f, fontSize * 2, fontSize / 10, RAYWHITE);
@@ -203,6 +205,15 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D moonTex, Texture2D spaceTex) 
 	return config;
 }
 
+/// <summary>
+/// Get a colour from the player palette using an index
+/// </summary>
+/// <param name="index">
+/// Position in the palette to take the colour from
+/// </param>
+/// <returns>
+/// Colour from the palette
+/// </returns>
 Color GetPlayerColourFromIndex(int index) {
 	switch (index) {
 	case 0:
@@ -224,6 +235,15 @@ Color GetPlayerColourFromIndex(int index) {
 	}
 }
 
+/// <summary>
+/// Select a colour using the player's inputs
+/// </summary>
+/// <param name="block:">
+/// Player changing the colour
+/// </param>
+/// <returns>
+/// Colour to change to
+/// </returns>
 Color PlayerSelectColour(PlayerBlock* block) {
 	if (input_GetButtonPressed(GI_LEFT, block->playerConfig)) {
 		block->colourIndex--;
@@ -247,6 +267,15 @@ Color PlayerSelectColour(PlayerBlock* block) {
 	return CLITERAL(Color) { 0, 0, 0, 0 };
 }
 
+/// <summary>
+/// Get a string describing the current selected game mode
+/// </summary>
+/// <param name="mode:">
+/// Current game mode
+/// </param>
+/// <returns>
+/// String describing game mode
+/// </returns>
 const char* GetTextFromGameMode(GameMode mode) {
 	switch (mode) {
 	case GM_FREE_FOR_ALL:
@@ -260,6 +289,12 @@ const char* GetTextFromGameMode(GameMode mode) {
 	}
 }
 
+/// <summary>
+/// Select a Game Mode using the number keys
+/// </summary>
+/// <param name="mode:">
+/// GameMode variable to change
+/// </param>
 void SelectGameMode(GameMode* mode) {
 	if (IsKeyPressed(KEY_ONE))
 		*mode = GM_FREE_FOR_ALL;
@@ -271,6 +306,15 @@ void SelectGameMode(GameMode* mode) {
 		*mode = GM_TEAM_FORT;
 }
 
+/// <summary>
+/// Update the Game Mode parameters with PAGE_UP, PAGE_DOWN & NUMPAD +, NUMPAD -
+/// </summary>
+/// <param name="params:">
+///	Parameters to update
+/// </param>
+/// <param name="mode":>
+/// Current Game Mode
+/// </param>
 void UpdateGameModeParams(int params[2], GameMode mode) {
 	if (IsKeyPressed(KEY_KP_ADD)) {
 		params[0] += 60;
@@ -287,6 +331,18 @@ void UpdateGameModeParams(int params[2], GameMode mode) {
 	}
 }
 
+/// <summary>
+/// Draw the Game Mode parameters
+/// </summary>
+/// <param name="params:">
+/// Game Mode parameters
+/// </param>
+/// <param name="mode:">
+/// Game Mode
+/// </param>
+/// <param name="fontSize:">
+/// Size in screen space for fonts
+/// </param>
 void DrawGameModeParams(int params[2], GameMode mode, int fontSize) {
 	switch (mode) {
 	case GM_FREE_FOR_ALL:

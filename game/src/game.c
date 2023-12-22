@@ -11,7 +11,9 @@
 void GameLoop() {
 	bool GameModeUpdate(GameMode mode, Player * players, Fort * forts, int params[2], float timer, int numPlayers, int* winner);
 
+	// =========
 	// Init vars
+	// =========
 
 	float timer = 0.f;
 	bool gameEnd = false;
@@ -19,7 +21,7 @@ void GameLoop() {
 
 	// Texture vars
 	Texture2D playerTex = LoadTexture("PlayerSprites.png");
-	SetTextureFilter(playerTex, TEXTURE_FILTER_TRILINEAR);
+	SetTextureFilter(playerTex, TEXTURE_FILTER_POINT);
 
 	if (playerTex.id == NULL) {
 		ErrorTrap(ERROR_LOADING, "Could not load PlayerSprites.png");
@@ -27,7 +29,7 @@ void GameLoop() {
 	}
 
 	Texture2D moonTex = LoadTexture("Moon.png");
-	SetTextureFilter(moonTex, TEXTURE_FILTER_TRILINEAR);
+	SetTextureFilter(moonTex, TEXTURE_FILTER_POINT);
 
 	if (moonTex.id == NULL) {
 		ErrorTrap(ERROR_LOADING, "Could not load Moon.png");
@@ -47,7 +49,7 @@ void GameLoop() {
 	}
 
 	Texture2D arrowTex = LoadTexture("Arrow.png");
-	SetTextureFilter(spaceTex, TEXTURE_FILTER_TRILINEAR);
+	SetTextureFilter(spaceTex, TEXTURE_FILTER_POINT);
 
 	if (arrowTex.id == NULL) {
 		ErrorTrap(ERROR_LOADING, "Could not load Arrow.png");
@@ -56,8 +58,7 @@ void GameLoop() {
 		UnloadTexture(spaceTex);
 		return;
 	}
-
-	MenuConfig config = MenuLoop(playerTex, moonTex, spaceTex);
+	MenuConfig config = MenuLoop(playerTex, spaceTex);
 
 	if (config.numPlayers == -1) {
 		UnloadTexture(playerTex);
@@ -75,8 +76,6 @@ void GameLoop() {
 	for (int i = 0; i < MAX_SNOWBALLS; i++) {
 		snowballs[i].active = false;
 	}
-
-	
 
 	// Moon vars
 	float moonRadius = GetScreenHeight() / 2.f - (GetScreenHeight() * 0.15f);
@@ -99,6 +98,10 @@ void GameLoop() {
 		players[i].colour = config.playerColours[i];
 	}
 
+	//===========
+	// Main Loop
+	//===========
+
 	while (!WindowShouldClose()) {
 		float delta = GetFrameTime();
 		timer += delta;
@@ -116,7 +119,7 @@ void GameLoop() {
 
 			int winner = -1;
 			if (GameModeUpdate(config.mode, players, forts, config.modeParams, timer, config.numPlayers, &winner)) {
-				gameEnd = true; gameWinner = winner;
+				gameEnd = true; gameWinner = winner;  timer = 0;
 				if (winner == -1) {
 					UnloadTexture(playerTex);
 					UnloadTexture(moonTex);
@@ -163,6 +166,27 @@ void GameLoop() {
 			EndDrawing();
 		}
 		else {
+			if (timer > 10) {
+				gameEnd = false;
+				timer = 0;
+
+				for (int i = 0; i < config.numPlayers; i++) {
+					DestroyPlayer(&players[i]);
+				}
+
+				config = MenuLoop(playerTex, spaceTex);
+
+				for (int i = 0; i < config.numPlayers; i++) {
+					CreatePlayer(&players[i], playerSize, config.playerConfig[i], i, config.playerTeams[i]);
+					players[i].angle = i * 30;
+					players[i].colour = config.playerColours[i];
+				}
+
+				for (int i = 0; i < MAX_SNOWBALLS; i++) {
+					snowballs[i].active = false;
+				}
+			}
+
 			BeginDrawing();
 
 			ClearBackground(BLACK);
@@ -208,12 +232,43 @@ void GameLoop() {
 		}
 	}
 
+	//=================
+	// Quit and Unload
+	//=================
+
 	UnloadTexture(playerTex);
 	UnloadTexture(moonTex);
 	UnloadTexture(spaceTex);
 	UnloadTexture(arrowTex);
 }
 
+/// <summary>
+/// Check if the game has ended as dictated by the Game Mode
+/// </summary>
+/// <param name="mode:">
+/// Current Game Mode
+/// </param>
+/// <param name="players:">
+/// Pointer to array of players
+/// </param>
+/// <param name="forts:">
+/// Pointer to array of forts
+/// </param>
+/// <param name="params:">
+/// Game Mode parameters
+/// </param>
+/// <param name="timer:">
+/// Current game timer
+/// </param>
+/// <param name="numPlayers:">
+/// Number of players
+/// </param>
+/// <param name="winner:">
+/// Set this to winning player/team
+/// </param>
+/// <returns>
+/// If the game is over
+/// </returns>
 bool GameModeUpdate(GameMode mode, Player* players, Fort* forts, int params[2], float timer, int numPlayers, int* winner) {
 	bool gameEnd = false;
 	int max = players[0].score;

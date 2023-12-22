@@ -10,7 +10,7 @@
 #define MAX_SNOWBALLS 16
 
 #define NORM_COLLISION (Rectangle){ 0, 0, playerSize / 2, playerSize }
-#define CROUCH_COLLISION (Rectangle) { 0, -playerSize / 2, playerSize / 2, playerSize / 2}
+#define CROUCH_COLLISION (Rectangle) { 0, -playerSize / 2, playerSize / 2, playerSize / 2 }
 #define NO_COLLISION (Rectangle) { 0, 0, 0, 0};
 
 void CreatePlayer(Player* player, int playerSize, int id, int playerId, unsigned char team) {
@@ -167,7 +167,19 @@ int UpdatePlayer(Player* player, int playerSize, float delta, Snowball* sb, int 
 		}
 
 		if (!input_GetButton(GI_ATTACK, player->id)) {
-			CreateSnowballGravity(&sb[nextSnowball], player->playerId, player->angle + (player->flipped ? -5.f : 5.f), moonMiddle, moonRadius, Vector2Rotate((Vector2) { player->flipped ? -1.f : 1.f, player->flipped ? -1.f : 1.f }, ((player->angle) + player->snowballAngle) * DEG2RAD), playerSize);
+			player->throwing = true;
+			player->state = PS_THROW_GRAVITY;
+		}
+		break;
+	case PS_THROW_GRAVITY:
+		player->ctx.loop = false;
+
+		if (player->stateTimer >= 0.8f && player->stateTimer < 0.9f) {
+			player->angle += (PLAYER_STEP)*player->flipped ? -1 : 1;
+		}
+
+		if (player->stateTimer >= 1.1f && player->snowballCount > 0 && player->throwing) {
+			CreateSnowballGravity(&sb[nextSnowball], player->playerId, player->angle + (player->flipped ? -5.f : 5.f), moonMiddle, moonRadius, Vector2Rotate((Vector2) { player->flipped ? -1.f : 1.f, player->flipped ? -1.f : 1.f }, ((player->angle) + player->snowballAngle)* DEG2RAD), playerSize);
 
 			nextSnowball++;
 
@@ -176,8 +188,13 @@ int UpdatePlayer(Player* player, int playerSize, float delta, Snowball* sb, int 
 			}
 
 			player->snowballCount--;
+			player->throwing = false;
+		}
 
+		if (player->stateTimer >= 1.5f) {
+			player->collision = NORM_COLLISION;
 			player->state = PS_STAND;
+
 		}
 		break;
 	}
@@ -253,6 +270,12 @@ void DrawPlayer(Player* player, Vector2 moonMiddle, float moonRadius, Texture2D 
 	case PS_HIT:
 		uv = animation_AnimateDef(DA_HITFRONT, &player->ctx, delta);
 		break;
+	case PS_AIM:
+		uv = animation_AnimateDef(DA_PLAYERIDLE, &player->ctx, delta);
+		break;
+	case PS_THROW_GRAVITY:
+		uv = animation_AnimateDef(DA_THROW, &player->ctx, delta);
+		break;
 	}
 
 	Rectangle texRect = { uv.x + 1, uv.y, player->flipped ? -128 : 128, 128 };
@@ -287,4 +310,21 @@ void DrawPlayer(Player* player, Vector2 moonMiddle, float moonRadius, Texture2D 
 
 	#endif // COLLISION_DEBUG
 
+}
+
+void DestroyPlayer(Player* player) {
+	player->angle = 0.f;
+	player->colour = YELLOW;
+	player->id = 0;
+	player->playerId = 0;
+	player->snowballCount = 0;
+	player->flipped = false;
+	player->throwing = false;
+	player->snowballAngle = 0.f;
+	animation_ClearContext(&player->ctx);
+	player->state = PS_STAND;
+	player->stateTimer = 0;
+	player->collision = (Rectangle){ 0 };
+	player->score = 0;
+	player->team = 0;
 }
