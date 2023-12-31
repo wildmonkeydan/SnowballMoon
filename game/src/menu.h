@@ -13,6 +13,7 @@ typedef struct MenuConfig {
 	unsigned char playerTeams[8];
 	GameMode mode;
 	int modeParams[2];
+	MusicTrack chosenTrack;
 }MenuConfig;
 
 /// <summary>

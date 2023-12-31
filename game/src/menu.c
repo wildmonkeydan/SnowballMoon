@@ -63,6 +63,7 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D spaceTex) {
 				config.playerColours[i] = blocks[i].chosenColour;
 			}
 			config.numPlayers -= 1;
+			config.chosenTrack = MUS_DIAMOND;
 
 			break;
 		}

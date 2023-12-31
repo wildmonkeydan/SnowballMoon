@@ -10,6 +10,7 @@
 
 void GameLoop() {
 	bool GameModeUpdate(GameMode mode, Player * players, Fort * forts, int params[2], float timer, int numPlayers, int* winner);
+	const char* GetPathFromMusic(MusicTrack track);
 
 	// =========
 	// Init vars
@@ -58,6 +59,8 @@ void GameLoop() {
 		UnloadTexture(spaceTex);
 		return;
 	}
+
+
 	MenuConfig config = MenuLoop(playerTex, spaceTex);
 
 	if (config.numPlayers == -1) {
@@ -68,6 +71,10 @@ void GameLoop() {
 
 		return;
 	}
+
+	// Music vars
+	Music track = LoadMusicStream(GetPathFromMusic(config.chosenTrack));
+	PlayMusicStream(track);
 
 	// Snowball vars
 	Snowball snowballs[MAX_SNOWBALLS];
@@ -128,6 +135,8 @@ void GameLoop() {
 					return;
 				}
 			}
+
+			UpdateMusicStream(track);
 
 			BeginDrawing();
 
@@ -236,10 +245,12 @@ void GameLoop() {
 	// Quit and Unload
 	//=================
 
+	StopMusicStream(track);
 	UnloadTexture(playerTex);
 	UnloadTexture(moonTex);
 	UnloadTexture(spaceTex);
 	UnloadTexture(arrowTex);
+	UnloadMusicStream(track);
 }
 
 /// <summary>
@@ -318,4 +329,13 @@ bool GameModeUpdate(GameMode mode, Player* players, Fort* forts, int params[2], 
 	}
 
 	return gameEnd;
+}
+
+const char* GetPathFromMusic(MusicTrack track) {
+	switch (track) {
+	case MUS_LOBBY:
+		return "Music/Lobby.mp3";
+	case MUS_DIAMOND:
+		return "Music/Black Diamond.mp3";
+	}
 }

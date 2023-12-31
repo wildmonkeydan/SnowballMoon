@@ -135,3 +135,9 @@ typedef struct Fort {
 	Rectangle pos;
 	AnimContext ctx;
 }Fort;
+
+typedef enum MusicTrack {
+	MUS_LOBBY,
+	MUS_DIAMOND,
+	MUS_OTHER
+}MusicTrack;
