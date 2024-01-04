@@ -39,6 +39,10 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D spaceTex) {
 	int fontSize = GetScreenHeight() / 40.f;
 
 	Texture2D logoTex = LoadTexture("Logo.png");
+	SetTextureFilter(logoTex, TEXTURE_FILTER_TRILINEAR);
+
+	Music lobbyMus = LoadMusicStream("Music/Lobby.mp3");
+	PlayMusicStream(lobbyMus);
 
 	if (logoTex.id == NULL) {
 		ErrorTrap(ERROR_LOADING, "Could not load Logo.png");
@@ -49,7 +53,11 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D spaceTex) {
 	int numPlaystation = JslConnectDevices();
 	TraceLog(LOG_INFO, "Num Playstation Controllers: %d", numPlaystation);
 
-	while (!WindowShouldClose()) {
+	bool closingWindow = false;
+
+	while (!closingWindow) {
+		closingWindow = WindowShouldClose();
+
 		int numReady = 0;
 
 		// Ready up
@@ -144,7 +152,7 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D spaceTex) {
 		// Animate the characters
 		Vector2 uv = animation_AnimateDef(DA_PLAYERIDLE, &idleCtx, GetFrameTime());
 
-		
+		UpdateMusicStream(lobbyMus);
 
 		BeginDrawing();
 
@@ -154,10 +162,15 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D spaceTex) {
 		DrawTextureRec(spaceTex, (Rectangle) { 0, 0, GetScreenWidth(), GetScreenHeight() }, (Vector2) { 0, 0 }, RAYWHITE);
 
 		// Draw Logo
-		DrawTexturePro(logoTex, (Rectangle) { 0, 0, logoTex.width, logoTex.height }, (Rectangle) { GetScreenWidth() / 2, GetScreenHeight() / 15, GetScreenHeight() * 0.513f, GetScreenHeight() * 0.288f }, (Vector2) { 416, 0 }, 0.f, RAYWHITE);
+		DrawTexturePro(logoTex, (Rectangle) { 0, 0, logoTex.width, logoTex.height }, 
+			(Rectangle) { (GetScreenWidth() / 2) + (GetScreenHeight() * 0.12525f), GetScreenHeight() / 15, GetScreenHeight() * 0.513f, GetScreenHeight() * 0.288f }, 
+			(Vector2) { 416, 0 }, 0.f, RAYWHITE);
 
 		// Draw Round Info
-		DrawTextPro(GetFontDefault(), GetTextFromGameMode(config.mode), (Vector2) { GetScreenWidth() / 2, GetScreenHeight() / 3 }, (Vector2) { (TextLength(GetTextFromGameMode(config.mode)) * (fontSize * 2)) / 4, 0 }, 0.f, fontSize * 2, fontSize / 10, RAYWHITE);
+		DrawTextPro(GetFontDefault(), GetTextFromGameMode(config.mode), 
+			(Vector2) { GetScreenWidth() / 2, GetScreenHeight() / 3 }, 
+			(Vector2) { (TextLength(GetTextFromGameMode(config.mode)) * (fontSize * 2)) / 4, 0 }, 
+			0.f, fontSize * 2, fontSize / 10, RAYWHITE);
 		DrawGameModeParams(config.modeParams, config.mode, fontSize);
 
 		// Draw Player Selection
@@ -165,7 +178,9 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D spaceTex) {
 			if (blocks[i].active) {
 				int blockX = playerBlockOffset.x + (i * playerBlockSize) + ((playerBlockSize / 8) * i);
 
-				DrawTexturePro(playerTex, (Rectangle) { uv.x, uv.y, 128, 128 }, (Rectangle) { blockX, playerBlockOffset.y - playerBlockSize, playerBlockSize, playerBlockSize }, (Vector2) { 0, 0 }, 0.f, blocks[i].chosenColour);
+				DrawTexturePro(playerTex, (Rectangle) { uv.x, uv.y, 128, 128 }, 
+					(Rectangle) { blockX, playerBlockOffset.y - playerBlockSize, playerBlockSize, playerBlockSize }, 
+					(Vector2) { 0, 0 }, 0.f, blocks[i].chosenColour);
 
 				if (config.mode == GM_TEAM_FORT) {
 					DrawRectangle(blockX, playerBlockOffset.y, playerBlockSize, playerBlockSize, config.playerTeams[i] ? BLUE : RED);
@@ -203,6 +218,12 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D spaceTex) {
 	}
 
 	UnloadTexture(logoTex);
+	UnloadMusicStream(lobbyMus);
+
+	if (closingWindow) {
+		config.numPlayers = -1; // If ESC is pressed instead of all player's readying up, close game
+	}
+
 	return config;
 }
 

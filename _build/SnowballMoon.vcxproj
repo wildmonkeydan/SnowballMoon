@@ -273,6 +273,7 @@
     <ClCompile Include="..\game\src\input.c" />
     <ClCompile Include="..\game\src\main.c" />
     <ClCompile Include="..\game\src\menu.c" />
+    <ClCompile Include="..\game\src\particle.c" />
     <ClCompile Include="..\game\src\player.c" />
     <ClCompile Include="..\game\src\snowball.c" />
   </ItemGroup>
@@ -284,6 +285,7 @@
     <ClInclude Include="..\game\src\input.h" />
     <ClInclude Include="..\game\src\JoyShock\JoyShockLibrary.h" />
     <ClInclude Include="..\game\src\menu.h" />
+    <ClInclude Include="..\game\src\particle.h" />
     <ClInclude Include="..\game\src\player.h" />
     <ClInclude Include="..\game\src\rres\rres-raylib.h" />
     <ClInclude Include="..\game\src\rres\rres.h" />

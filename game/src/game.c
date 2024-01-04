@@ -5,8 +5,10 @@
 #include "menu.h"
 #include "fort.h"
 #include "error.h"
+#include "particle.h"
 
 #define MAX_SNOWBALLS 16
+#define MAX_PARTICLES 64
 
 void GameLoop() {
 	bool GameModeUpdate(GameMode mode, Player * players, Fort * forts, int params[2], float timer, int numPlayers, int* winner);
@@ -22,7 +24,7 @@ void GameLoop() {
 
 	// Texture vars
 	Texture2D playerTex = LoadTexture("PlayerSprites.png");
-	SetTextureFilter(playerTex, TEXTURE_FILTER_POINT);
+	SetTextureFilter(playerTex, TEXTURE_FILTER_TRILINEAR);
 
 	if (playerTex.id == NULL) {
 		ErrorTrap(ERROR_LOADING, "Could not load PlayerSprites.png");
@@ -30,7 +32,7 @@ void GameLoop() {
 	}
 
 	Texture2D moonTex = LoadTexture("Moon.png");
-	SetTextureFilter(moonTex, TEXTURE_FILTER_POINT);
+	SetTextureFilter(moonTex, TEXTURE_FILTER_TRILINEAR);
 
 	if (moonTex.id == NULL) {
 		ErrorTrap(ERROR_LOADING, "Could not load Moon.png");
@@ -50,7 +52,7 @@ void GameLoop() {
 	}
 
 	Texture2D arrowTex = LoadTexture("Arrow.png");
-	SetTextureFilter(spaceTex, TEXTURE_FILTER_POINT);
+	SetTextureFilter(spaceTex, TEXTURE_FILTER_TRILINEAR);
 
 	if (arrowTex.id == NULL) {
 		ErrorTrap(ERROR_LOADING, "Could not load Arrow.png");
@@ -82,6 +84,13 @@ void GameLoop() {
 
 	for (int i = 0; i < MAX_SNOWBALLS; i++) {
 		snowballs[i].active = false;
+	}
+
+	Particle particles[MAX_PARTICLES];
+	int nextParticle = 0;
+
+	for (int i = 0; i < MAX_PARTICLES; i++) {
+		particles[i].active = false;
 	}
 
 	// Moon vars
@@ -120,8 +129,12 @@ void GameLoop() {
 			}
 
 			// Update Snowballs
+			for (int i = 0; i < MAX_PARTICLES; i++) {
+				UpdateParticle(&particles[i], delta);
+			}
+
 			for (int i = 0; i < MAX_SNOWBALLS; i++) {
-				UpdateSnowball(&snowballs[i], players, forts, config.mode, 4, playerSize, moonRadius - moonRadiusAdjust, moonCenter, delta);
+				nextParticle = UpdateSnowball(&snowballs[i], players, forts, particles, nextParticle, config.mode, 4, playerSize, moonRadius - moonRadiusAdjust, moonCenter, delta);
 			}
 
 			int winner = -1;
@@ -153,7 +166,10 @@ void GameLoop() {
 			}
 
 			// Draw Moon 
-			DrawTexturePro(moonTex, (Rectangle) { 0, 0, moonTex.width, moonTex.height }, (Rectangle) { moonCenter.x - moonRadius, moonCenter.y - moonRadius, moonRadius * 2, moonRadius * 2 }, (Vector2) { 0, 0 }, 0.f, RAYWHITE);
+			DrawTexturePro(moonTex, 
+				(Rectangle) { 0, 0, moonTex.width, moonTex.height }, 
+				(Rectangle) { moonCenter.x - moonRadius, moonCenter.y - moonRadius, moonRadius * 2, moonRadius * 2 }, 
+				(Vector2) { 0, 0 }, 0.f, RAYWHITE);
 
 			// Draw Players
 			for (int i = 0; i < config.numPlayers; i++) {
@@ -162,6 +178,10 @@ void GameLoop() {
 
 			
 			// Draw Snowballs
+			for (int i = 0; i < MAX_PARTICLES; i++) {
+				DrawParticle(&particles[i], moonRadius - moonRadiusAdjust);
+			}
+
 			for (int i = 0; i < MAX_SNOWBALLS; i++) {
 				DrawSnowball(&snowballs[i], moonCenter, moonRadius - moonRadiusAdjust);
 			}
@@ -185,6 +205,16 @@ void GameLoop() {
 
 				config = MenuLoop(playerTex, spaceTex);
 
+				if (config.numPlayers == -1) {
+					StopMusicStream(track);
+					UnloadTexture(playerTex);
+					UnloadTexture(moonTex);
+					UnloadTexture(spaceTex);
+					UnloadTexture(arrowTex);
+					UnloadMusicStream(track);
+					return;
+				}
+
 				for (int i = 0; i < config.numPlayers; i++) {
 					CreatePlayer(&players[i], playerSize, config.playerConfig[i], i, config.playerTeams[i]);
 					players[i].angle = i * 30;
@@ -195,6 +225,8 @@ void GameLoop() {
 					snowballs[i].active = false;
 				}
 			}
+
+			UpdateMusicStream(track);
 
 			BeginDrawing();
 
@@ -219,6 +251,10 @@ void GameLoop() {
 			}
 
 			// Draw Snowballs
+			for (int i = 0; i < MAX_PARTICLES; i++){
+				DrawParticle(&particles[i], moonRadius - moonRadiusAdjust);
+			}
+
 			for (int i = 0; i < MAX_SNOWBALLS; i++) {
 				DrawSnowball(&snowballs[i], moonCenter, moonRadius - moonRadiusAdjust);
 			}
@@ -231,10 +267,18 @@ void GameLoop() {
 
 			// Draw Result
 			if (config.mode == GM_TEAM_FORT) {
-				DrawTextPro(GetFontDefault(), TextFormat("Team %d Wins!", gameWinner + 1), (Vector2) { GetScreenWidth() / 2.f, GetScreenHeight() / 2.f }, (Vector2) { ((TextLength(TextFormat("Team %d Wins!", gameWinner + 1)) - 1) * (fontSize * 4)) / 4, fontSize }, 0.f, fontSize * 4, fontSize / 10, forts[gameWinner].teamColour);
+				DrawTextPro(GetFontDefault(), 
+					TextFormat("Team %d Wins!", gameWinner + 1), 
+					(Vector2) { GetScreenWidth() / 2.f, GetScreenHeight() / 2.f }, 
+					(Vector2) { ((TextLength(TextFormat("Team %d Wins!", gameWinner + 1)) - 2) * (fontSize * 4)) / 4, fontSize },
+					0.f, fontSize * 4, fontSize / 10, forts[gameWinner].teamColour);
 			}
 			else {
-				DrawTextPro(GetFontDefault(), TextFormat("Player %d Wins!", gameWinner + 1), (Vector2) { GetScreenWidth() / 2.f, GetScreenHeight() / 2.f }, (Vector2) { ((TextLength(TextFormat("Player %d Wins!", gameWinner + 1)) - 1) * (fontSize * 4)) / 4, fontSize }, 0.f, fontSize * 4, fontSize / 10, players[gameWinner].colour);
+				DrawTextPro(GetFontDefault(), 
+					TextFormat("Player %d Wins!", gameWinner + 1), 
+					(Vector2) { GetScreenWidth() / 2.f, GetScreenHeight() / 2.f }, 
+					(Vector2) { ((TextLength(TextFormat("Player %d Wins!", gameWinner + 1)) - 2) * (fontSize * 4)) / 4, fontSize }, 
+					0.f, fontSize * 4, fontSize / 10, players[gameWinner].colour);
 			}
 
 			EndDrawing();
@@ -287,17 +331,6 @@ bool GameModeUpdate(GameMode mode, Player* players, Fort* forts, int params[2], 
 
 	switch (mode) {
 	case GM_FREE_FOR_ALL:
-		if (timer >= params[0]) {
-			for (int i = 0; i < numPlayers; i++) {
-				if (players[i].score > max) {
-					maxId = i;
-					max = players[i].score;
-				}
-			}
-			*winner = maxId;
-			gameEnd = true;
-		}
-
 		for (int i = 0; i < numPlayers; i++) {
 			if (players[i].score >= params[1]) {
 				*winner = i;
@@ -328,14 +361,38 @@ bool GameModeUpdate(GameMode mode, Player* players, Fort* forts, int params[2], 
 		break;
 	}
 
+	if (timer >= params[0]) {
+		for (int i = 0; i < numPlayers; i++) {
+			if (players[i].score > max) {
+				maxId = i;
+				max = players[i].score;
+			}
+		}
+		*winner = maxId;
+		gameEnd = true;
+	}
+
 	return gameEnd;
 }
 
+/// <summary>
+/// Get the file path to load a MusicTrack from
+/// </summary>
+/// <param name="track:">
+/// Track to get file path of
+/// </param>
+/// <returns>
+/// String of filepath
+/// </returns>
 const char* GetPathFromMusic(MusicTrack track) {
 	switch (track) {
 	case MUS_LOBBY:
 		return "Music/Lobby.mp3";
 	case MUS_DIAMOND:
 		return "Music/Black Diamond.mp3";
+	case MUS_ARTIC:
+		return "Music/Artic Beat.mp3";
+	case MUS_ESKIMO:
+		return "Music/Eskimo Zone.mp3";
 	}
 }

@@ -60,6 +60,12 @@ void CreateSnowballGravity(Snowball* sb, int owner, float angle, Vector2 moonMid
 /// <param name="forts:">
 /// Pointer to array of forts, used for collisions
 /// </param>
+/// <param name="particles:">
+/// Pointer to array of particles
+/// </param>
+/// <param name="nextParticle:">
+/// Next particle to create in the array
+/// </param>
 /// <param name="mode:">
 /// Game Mode
 /// </param>
@@ -78,7 +84,10 @@ void CreateSnowballGravity(Snowball* sb, int owner, float angle, Vector2 moonMid
 /// <param name="delta">
 /// Time taken for the previous frame
 /// </param>
-void UpdateSnowball(Snowball* sb, Player* players, Fort* forts, GameMode mode, int numPlayers, int playerSize, float moonRadius, Vector2 moonMiddle, float delta);
+/// <returns>
+/// nextParticle
+/// </returns>
+int UpdateSnowball(Snowball* sb, Player* players, Fort* forts, Particle* particles, int nextParticle, GameMode mode, int numPlayers, int playerSize, float moonRadius, Vector2 moonMiddle, float delta);
 
 /// <summary>
 /// Draw a Snowball, should be called every frame after UpdateSnowball

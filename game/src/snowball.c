@@ -1,5 +1,6 @@
 #include "snowball.h"
 #include "player.h"
+#include "particle.h"
 #include <raylib.h>
 #include <raymath.h>
 
@@ -8,6 +9,7 @@
 #define STRAIGHT_GRAVITY 160.f
 #define STANDARD_GRAVITY 4000
 #define SNOWBALL_RADIUS_SCALAR 0.01f 
+#define PARTICLE_FREQUENCY 0.125f
 
 void CreateSnowballStraight(Snowball* sb, int playerHeight, int owner, float angle, int direction) {
 	sb->owner = owner;
@@ -16,6 +18,7 @@ void CreateSnowballStraight(Snowball* sb, int playerHeight, int owner, float ang
 	sb->direction = direction;
 	sb->height = playerHeight * 0.75f;
 	sb->active = true;
+	sb->particleTimer = 0.f;
 }
 
 void CreateSnowballGravity(Snowball* sb, int owner, float angle, Vector2 moonMiddle, float moonRadius, Vector2 direction, int playerHeight) {
@@ -30,10 +33,12 @@ void CreateSnowballGravity(Snowball* sb, int owner, float angle, Vector2 moonMid
 	sb->velocity.y = sb->vDirection.y * 2000.f;
 
 	sb->active = true;
+	sb->particleTimer = 0.f;
 }
 
-void UpdateSnowball(Snowball* sb, Player* players, Fort* forts, GameMode mode, int numPlayers, int playerSize, float moonRadius, Vector2 moonMiddle, float delta) {
+int UpdateSnowball(Snowball* sb, Player* players, Fort* forts, Particle* particles, int nextParticle, GameMode mode, int numPlayers, int playerSize, float moonRadius, Vector2 moonMiddle, float delta) {
 	if (sb->active) {
+		sb->particleTimer += delta;
 
 		if (sb->type == SPT_STRAIGHT) {
 
@@ -105,6 +110,16 @@ void UpdateSnowball(Snowball* sb, Player* players, Fort* forts, GameMode mode, i
 				sb->angle = 359;
 			}
 
+			if (sb->particleTimer > PARTICLE_FREQUENCY) {
+				CreateParticle(&particles[nextParticle], snowballPos);
+				nextParticle++;
+
+				if (nextParticle > 63) {
+					nextParticle = 0;
+				}
+
+				sb->particleTimer = 0.f;
+			}
 		}
 		else {
 
@@ -170,21 +185,36 @@ void UpdateSnowball(Snowball* sb, Player* players, Fort* forts, GameMode mode, i
 					}
 				}
 			}
-			
-		}
+			if (sb->particleTimer > PARTICLE_FREQUENCY) {
+				CreateParticle(&particles[nextParticle], sb->position);
+				nextParticle++;
 
+				if (nextParticle > 63) {
+					nextParticle = 0;
+				}
+
+				sb->particleTimer = 0.f;
+			}
+		}
 	}
+
+	return nextParticle;
 }
 
 void DrawSnowball(Snowball* sb, Vector2 moonMiddle, float moonRadius) {
 	if (sb->active) {
 
-		if (sb->type == SPT_STRAIGHT) {
-			DrawCircle(((moonRadius + sb->height) * cosf(DEG2RAD * sb->angle)) + moonMiddle.x, ((moonRadius + sb->height) * sinf(DEG2RAD * sb->angle)) + moonMiddle.y, moonRadius * SNOWBALL_RADIUS_SCALAR, RAYWHITE);
-		}
-		else {
-			DrawCircle(sb->position.x, sb->position.y, moonRadius * SNOWBALL_RADIUS_SCALAR, RAYWHITE);
+		float size = moonRadius * SNOWBALL_RADIUS_SCALAR;
+
+		if (size < 1) {
+			size = 1; // Make sure the snowballs appear, even on lower resolutions
 		}
 
+		if (sb->type == SPT_STRAIGHT) {
+			DrawCircle(((moonRadius + sb->height) * cosf(DEG2RAD * sb->angle)) + moonMiddle.x, ((moonRadius + sb->height) * sinf(DEG2RAD * sb->angle)) + moonMiddle.y, size, RAYWHITE);
+		}
+		else {
+			DrawCircle(sb->position.x, sb->position.y, size, RAYWHITE);
+		}
 	}
 }

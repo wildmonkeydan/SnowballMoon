@@ -102,6 +102,7 @@ typedef struct Snowball{
 
 	int owner;
 	SnowballPhysicsType type;
+	float particleTimer;
 
 
 	// Used for SPT_GRAVITY
@@ -113,6 +114,16 @@ typedef struct Snowball{
 	float height;
 	int direction;
 }Snowball;
+
+/// <summary>
+/// Particle data type, for snow trails
+/// </summary>
+typedef struct Particle {
+	bool active;
+
+	Vector2 position;
+	float lifeTimer;
+}Particle;
 
 /// <summary>
 /// Enum for game mode logic
@@ -136,8 +147,12 @@ typedef struct Fort {
 	AnimContext ctx;
 }Fort;
 
+/// <summary>
+/// Enum for music tracks in the game
+/// </summary>
 typedef enum MusicTrack {
 	MUS_LOBBY,
 	MUS_DIAMOND,
-	MUS_OTHER
+	MUS_ESKIMO,
+	MUS_ARTIC
 }MusicTrack;
