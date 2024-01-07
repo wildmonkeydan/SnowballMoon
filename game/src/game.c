@@ -11,7 +11,7 @@
 #define MAX_PARTICLES 64
 
 void GameLoop() {
-	bool GameModeUpdate(GameMode mode, Player * players, Fort * forts, int params[2], float timer, int numPlayers, int* winner);
+	bool GameModeUpdate(GameMode mode, Player* players, Fort* forts, int params[2], float timer, int numPlayers, int* winner);
 	const char* GetPathFromMusic(MusicTrack track);
 
 	// =========
@@ -203,17 +203,23 @@ void GameLoop() {
 					DestroyPlayer(&players[i]);
 				}
 
+				StopMusicStream(track);
+				UnloadMusicStream(track);
+
 				config = MenuLoop(playerTex, spaceTex);
 
-				if (config.numPlayers == -1) {
-					StopMusicStream(track);
+				
+
+				if (config.numPlayers == -1) {					
 					UnloadTexture(playerTex);
 					UnloadTexture(moonTex);
 					UnloadTexture(spaceTex);
 					UnloadTexture(arrowTex);
-					UnloadMusicStream(track);
 					return;
 				}
+
+				track = LoadMusicStream(GetPathFromMusic(config.chosenTrack));
+				PlayMusicStream(track);
 
 				for (int i = 0; i < config.numPlayers; i++) {
 					CreatePlayer(&players[i], playerSize, config.playerConfig[i], i, config.playerTeams[i]);

@@ -8,9 +8,13 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D spaceTex) {
 	Color GetPlayerColourFromIndex(int index);
 	Color PlayerSelectColour(PlayerBlock* block);
 	const char* GetTextFromGameMode(GameMode mode);
-	void SelectGameMode(GameMode * mode);
+	void SelectGameMode(GameMode* mode);
 	void UpdateGameModeParams(int params[2], GameMode mode);
 	void DrawGameModeParams(int params[2], GameMode mode, int fontSize);
+	MusicTrack UpdateMusicChoice(MusicMetadata* meta, MusicTrack track);
+	void DrawMusicChoice(MusicMetadata* meta, MusicTrack track, int fontSize);
+	void DrawInstructions(int fontSize);
+	void DrawGameModeInstructions(int fontSize);
 
 	MenuConfig config = { 0 };
 	config.numPlayers = 1;
@@ -44,6 +48,9 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D spaceTex) {
 	Music lobbyMus = LoadMusicStream("Music/Lobby.mp3");
 	PlayMusicStream(lobbyMus);
 
+	MusicTrack musChoice = MUS_DIAMOND;
+	MusicMetadata musMeta = { 0 };
+
 	if (logoTex.id == NULL) {
 		ErrorTrap(ERROR_LOADING, "Could not load Logo.png");
 		config.numPlayers = -1;
@@ -71,7 +78,7 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D spaceTex) {
 				config.playerColours[i] = blocks[i].chosenColour;
 			}
 			config.numPlayers -= 1;
-			config.chosenTrack = MUS_DIAMOND;
+			config.chosenTrack = musChoice;
 
 			break;
 		}
@@ -152,6 +159,7 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D spaceTex) {
 		// Animate the characters
 		Vector2 uv = animation_AnimateDef(DA_PLAYERIDLE, &idleCtx, GetFrameTime());
 
+		musChoice = UpdateMusicChoice(&musMeta, musChoice);
 		UpdateMusicStream(lobbyMus);
 
 		BeginDrawing();
@@ -172,6 +180,12 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D spaceTex) {
 			(Vector2) { (TextLength(GetTextFromGameMode(config.mode)) * (fontSize * 2)) / 4, 0 }, 
 			0.f, fontSize * 2, fontSize / 10, RAYWHITE);
 		DrawGameModeParams(config.modeParams, config.mode, fontSize);
+		DrawMusicChoice(&musMeta, musChoice, fontSize);
+
+		if (config.numPlayers == 1) {
+			DrawInstructions(fontSize);
+		}
+		DrawGameModeInstructions(fontSize);
 
 		// Draw Player Selection
 		for (int i = 0; i < config.numPlayers; i++) {
@@ -381,4 +395,100 @@ void DrawGameModeParams(int params[2], GameMode mode, int fontSize) {
 	default:
 		break;
 	}
+
+
+}
+
+/// <summary>
+/// Update the Music choice
+/// </summary>
+/// <param name="meta:">
+/// Metadata of the chosen music
+/// </param>
+/// <param name="track:">
+/// Current chosen MusicTrack
+/// </param>
+/// <returns>
+/// MusicTrack chosen
+/// </returns>
+MusicTrack UpdateMusicChoice(MusicMetadata* meta, MusicTrack track) {
+	if (IsKeyPressed(KEY_INSERT)) {
+		if (track == 3) {
+			track = 0;
+		}
+		else {
+			track++;
+		}
+	}
+
+	if (IsKeyPressed(KEY_DELETE)) {
+		if (track == 0) {
+			track = 3;
+		}
+		else {
+			track--;
+		}
+	}
+
+	switch (track) {
+	case MUS_LOBBY:
+		TextCopy(meta->artist, "Matthew Pablo");
+		TextCopy(meta->name, "Snowland Town");
+		break;
+	case MUS_DIAMOND:
+		TextCopy(meta->artist, "Joth");
+		TextCopy(meta->name, "Black Diamond");
+		break;
+	case MUS_ESKIMO:
+		TextCopy(meta->artist, "Macro");
+		TextCopy(meta->name, "Eskimo Zone");
+		break;
+	case MUS_ARTIC:
+		TextCopy(meta->artist, "Ted Kerr");
+		TextCopy(meta->name, "Artic Beat");
+		break;
+	}
+
+	return track;
+}
+
+/// <summary>
+/// Draw the metadata of the current chosen music
+/// </summary>
+/// <param name="meta:">
+/// Metadata of the chosen music
+/// </param>
+/// <param name="track:">
+/// Current chosen MusicTrack
+/// </param>
+/// <param name="fontSize:">
+/// Size in screen space for fonts
+/// </param>
+void DrawMusicChoice(MusicMetadata* meta, MusicTrack track, int fontSize) {
+	int margin = GetScreenWidth() - (fontSize * 17);
+
+	DrawText(meta->artist, margin, fontSize, fontSize, RAYWHITE);
+	DrawText(meta->name, margin, (fontSize * 2) + (fontSize / 2), fontSize, RAYWHITE);
+	DrawText("Use Insert/Delete to choose music", margin - fontSize, (fontSize * 4), fontSize, RAYWHITE);
+}
+
+/// <summary>
+/// Draw instructions on how to start the game
+/// </summary>
+/// <param name="fontSize:">
+/// Size in screen space for fonts
+/// </param>
+void DrawInstructions(int fontSize) {
+	DrawText("Press a button of the gamepad/keys you want to use to enter the game, then press the ACTION button to ready up.", fontSize, GetScreenHeight() - fontSize, fontSize, RAYWHITE);
+}
+
+/// <summary>
+/// Draw instructions on how to change GameMode
+/// </summary>
+/// <param name="fontSize:">
+/// Size in screen space for fonts
+/// </param>
+void DrawGameModeInstructions(int fontSize) {
+	DrawText("Use PgUp/PgDown to change score limit, Numpad +/- to change the timer", fontSize, fontSize, fontSize, RAYWHITE);
+	DrawText("Use the Number Keys to change the game mode", fontSize, (fontSize * 2) + (fontSize / 4), fontSize, RAYWHITE);
 }

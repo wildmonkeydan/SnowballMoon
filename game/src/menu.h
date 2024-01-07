@@ -29,6 +29,14 @@ typedef struct PlayerBlock {
 }PlayerBlock;
 
 /// <summary>
+/// Data type for displaying info on music tracks
+/// </summary>
+typedef struct MusicMetadata {
+	char name[16];
+	char artist[16];
+}MusicMetadata;
+
+/// <summary>
 /// Main loop for menu
 /// </summary>
 /// <param name="playerTex:">
