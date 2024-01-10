@@ -4,9 +4,9 @@
 #include "JoyShock/JoyShockLibrary.h"
 #include "error.h"
 
-MenuConfig MenuLoop(Texture2D playerTex, Texture2D spaceTex) {
+MenuConfig MenuLoop(Texture2D playerTex, Texture2D spaceTex, Sound* sounds) {
 	Color GetPlayerColourFromIndex(int index);
-	Color PlayerSelectColour(PlayerBlock* block);
+	Color PlayerSelectColour(PlayerBlock * block, Sound scroll);
 	const char* GetTextFromGameMode(GameMode mode);
 	void SelectGameMode(GameMode* mode);
 	void UpdateGameModeParams(int params[2], GameMode mode);
@@ -42,7 +42,7 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D spaceTex) {
 	Vector2 playerBlockOffset = { 0 , GetScreenHeight() - playerBlockSize };
 	int fontSize = GetScreenHeight() / 40.f;
 
-	Texture2D logoTex = LoadTexture("Logo.png");
+	Texture2D logoTex = LoadTexture("Data/Logo.png");
 	SetTextureFilter(logoTex, TEXTURE_FILTER_TRILINEAR);
 
 	Music lobbyMus = LoadMusicStream("Music/Lobby.mp3");
@@ -86,10 +86,11 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D spaceTex) {
 		for (int i = 0; i < config.numPlayers; i++) {
 			if (blocks[i].active) {
 				if (input_GetButtonPressed(GI_ATTACK, config.playerConfig[i])) {
+					PlaySound(sounds[SND_CONFIRM]);
 					blocks[i].ready = !blocks[i].ready;
 				}
 
-				Color change = PlayerSelectColour(&blocks[i]);
+				Color change = PlayerSelectColour(&blocks[i], sounds[SND_SCROLL]);
 
 
 				if (change.a != 0) {
@@ -157,7 +158,7 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D spaceTex) {
 		}
 
 		// Animate the characters
-		Vector2 uv = animation_AnimateDef(DA_PLAYERIDLE, &idleCtx, GetFrameTime());
+		Vector2 uv = animation_AnimateDef(DA_PLAYERIDLE, &idleCtx, GetFrameTime(), sounds);
 
 		musChoice = UpdateMusicChoice(&musMeta, musChoice);
 		UpdateMusicStream(lobbyMus);
@@ -277,11 +278,16 @@ Color GetPlayerColourFromIndex(int index) {
 /// <param name="block:">
 /// Player changing the colour
 /// </param>
+/// <param name="scroll:">
+/// Sound effect
+/// </param>
 /// <returns>
 /// Colour to change to
 /// </returns>
-Color PlayerSelectColour(PlayerBlock* block) {
+Color PlayerSelectColour(PlayerBlock* block, Sound scroll) {
 	if (input_GetButtonPressed(GI_LEFT, block->playerConfig)) {
+		PlaySound(scroll);
+
 		block->colourIndex--;
 
 		if (block->colourIndex < 0) {
@@ -291,6 +297,7 @@ Color PlayerSelectColour(PlayerBlock* block) {
 		return GetPlayerColourFromIndex(block->colourIndex);
 	}
 	if (input_GetButtonPressed(GI_RIGHT, block->playerConfig)) {
+		PlaySound(scroll);
 		block->colourIndex++;
 
 		if (block->colourIndex > 7) {

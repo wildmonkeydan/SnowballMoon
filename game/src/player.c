@@ -244,7 +244,7 @@ int UpdatePlayer(Player* player, int playerSize, float delta, Snowball* sb, int 
 	return nextSnowball;
 }
 
-void DrawPlayer(Player* player, Vector2 moonMiddle, float moonRadius, Texture2D playerTex, Texture2D arrowTex, int playerSize, float delta, GameMode mode) {
+void DrawPlayer(Player* player, Vector2 moonMiddle, float moonRadius, Texture2D playerTex, Texture2D arrowTex, int playerSize, float delta, GameMode mode, Sound* sounds) {
 
 	int x = moonRadius * cosf(DEG2RAD * player->angle);
 	int y = moonRadius * sinf(DEG2RAD * player->angle);
@@ -253,28 +253,28 @@ void DrawPlayer(Player* player, Vector2 moonMiddle, float moonRadius, Texture2D 
 
 	switch (player->state) {
 	case PS_STAND:
-		uv = animation_AnimateDef(DA_PLAYERIDLE, &player->ctx, delta);
+		uv = animation_AnimateDef(DA_PLAYERIDLE, &player->ctx, delta, sounds);
 		break;
 	case PS_RUN:
-		uv = animation_AnimateDef(DA_PLAYERRUN, &player->ctx, delta);
+		uv = animation_AnimateDef(DA_PLAYERRUN, &player->ctx, delta, sounds);
 		break;
 	case PS_CROUCH:
-		uv = animation_AnimateDef(DA_PLAYERCROUCH, &player->ctx, delta);
+		uv = animation_AnimateDef(DA_PLAYERCROUCH, &player->ctx, delta, sounds);
 		break;
 	case PS_COLLECT:
-		uv = animation_AnimateDef(DA_PICKUP, &player->ctx, delta);
+		uv = animation_AnimateDef(DA_PICKUP, &player->ctx, delta, sounds);
 		break;
 	case PS_THROW:
-		uv = animation_AnimateDef(DA_THROW, &player->ctx, delta);
+		uv = animation_AnimateDef(DA_THROW, &player->ctx, delta, sounds);
 		break;
 	case PS_HIT:
-		uv = animation_AnimateDef(DA_HITFRONT, &player->ctx, delta);
+		uv = animation_AnimateDef(DA_HITFRONT, &player->ctx, delta, sounds);
 		break;
 	case PS_AIM:
-		uv = animation_AnimateDef(DA_PLAYERIDLE, &player->ctx, delta);
+		uv = animation_AnimateDef(DA_PLAYERIDLE, &player->ctx, delta, sounds);
 		break;
 	case PS_THROW_GRAVITY:
-		uv = animation_AnimateDef(DA_THROW, &player->ctx, delta);
+		uv = animation_AnimateDef(DA_THROW, &player->ctx, delta, sounds);
 		break;
 	}
 

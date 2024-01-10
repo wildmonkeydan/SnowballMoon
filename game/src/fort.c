@@ -30,7 +30,7 @@ void DrawFort(Fort* fort, Texture2D fortTex, float delta, int fontSize) {
 	}
 	
 	if (fort->health > 0) {
-		Vector2 uv = animation_AnimateDef(DA_FLAG, &fort->ctx, delta);
+		Vector2 uv = animation_AnimateDef(DA_FLAG, &fort->ctx, delta, NULL);
 
 		texRect.x = uv.x;
 		texRect.y = uv.y;

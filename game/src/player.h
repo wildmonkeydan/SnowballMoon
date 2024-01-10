@@ -79,7 +79,7 @@ int UpdatePlayer(Player* player, int playerSize, float delta, Snowball* sb, int 
 /// <param name="mode:">
 /// Current game mode
 /// </param>
-void DrawPlayer(Player* player, Vector2 moonMiddle, float moonRadius, Texture2D playerTex, Texture2D arrowTex, int playerSize, float delta, GameMode mode);
+void DrawPlayer(Player* player, Vector2 moonMiddle, float moonRadius, Texture2D playerTex, Texture2D arrowTex, int playerSize, float delta, GameMode mode, Sound* sounds);
 
 /// <summary>
 /// Destroy and invalidate a player

@@ -9,10 +9,12 @@
 
 #define MAX_SNOWBALLS 16
 #define MAX_PARTICLES 64
+#define NUM_SOUNDS 10
 
 void GameLoop() {
 	bool GameModeUpdate(GameMode mode, Player* players, Fort* forts, int params[2], float timer, int numPlayers, int* winner);
 	const char* GetPathFromMusic(MusicTrack track);
+	int LoadSoundEffects(Sound* sounds);
 
 	// =========
 	// Init vars
@@ -23,7 +25,7 @@ void GameLoop() {
 	int gameWinner = -1;
 
 	// Texture vars
-	Texture2D playerTex = LoadTexture("PlayerSprites.png");
+	Texture2D playerTex = LoadTexture("Data/PlayerSprites.png");
 	SetTextureFilter(playerTex, TEXTURE_FILTER_TRILINEAR);
 
 	if (playerTex.id == NULL) {
@@ -31,7 +33,7 @@ void GameLoop() {
 		return;
 	}
 
-	Texture2D moonTex = LoadTexture("Moon.png");
+	Texture2D moonTex = LoadTexture("Data/Moon.png");
 	SetTextureFilter(moonTex, TEXTURE_FILTER_TRILINEAR);
 
 	if (moonTex.id == NULL) {
@@ -40,7 +42,7 @@ void GameLoop() {
 		return;
 	}
 
-	Texture2D spaceTex = LoadTexture("Space.png");
+	Texture2D spaceTex = LoadTexture("Data/Space.png");
 	SetTextureFilter(spaceTex, TEXTURE_FILTER_TRILINEAR);
 	SetTextureWrap(spaceTex, TEXTURE_WRAP_REPEAT);
 
@@ -51,7 +53,7 @@ void GameLoop() {
 		return;
 	}
 
-	Texture2D arrowTex = LoadTexture("Arrow.png");
+	Texture2D arrowTex = LoadTexture("Data/Arrow.png");
 	SetTextureFilter(spaceTex, TEXTURE_FILTER_TRILINEAR);
 
 	if (arrowTex.id == NULL) {
@@ -62,8 +64,17 @@ void GameLoop() {
 		return;
 	}
 
+	Sound soundEffects[NUM_SOUNDS] = { 0 };
 
-	MenuConfig config = MenuLoop(playerTex, spaceTex);
+	if (LoadSoundEffects(soundEffects) == -1) {
+		UnloadTexture(playerTex);
+		UnloadTexture(moonTex);
+		UnloadTexture(spaceTex);
+		UnloadTexture(arrowTex);
+		return;
+	}
+
+	MenuConfig config = MenuLoop(playerTex, spaceTex, soundEffects);
 
 	if (config.numPlayers == -1) {
 		UnloadTexture(playerTex);
@@ -173,7 +184,7 @@ void GameLoop() {
 
 			// Draw Players
 			for (int i = 0; i < config.numPlayers; i++) {
-				DrawPlayer(&players[i], moonCenter, moonRadius - moonRadiusAdjust, playerTex, arrowTex, playerSize, delta, config.mode);
+				DrawPlayer(&players[i], moonCenter, moonRadius - moonRadiusAdjust, playerTex, arrowTex, playerSize, delta, config.mode, soundEffects);
 			}
 
 			
@@ -206,7 +217,7 @@ void GameLoop() {
 				StopMusicStream(track);
 				UnloadMusicStream(track);
 
-				config = MenuLoop(playerTex, spaceTex);
+				config = MenuLoop(playerTex, spaceTex, soundEffects);
 
 				
 
@@ -215,6 +226,10 @@ void GameLoop() {
 					UnloadTexture(moonTex);
 					UnloadTexture(spaceTex);
 					UnloadTexture(arrowTex);
+
+					for (int i = 0; i < NUM_SOUNDS; i++) {
+						UnloadSound(soundEffects[i]);
+					}
 					return;
 				}
 
@@ -253,7 +268,7 @@ void GameLoop() {
 
 			// Draw Players
 			for (int i = 0; i < config.numPlayers; i++) {
-				DrawPlayer(&players[i], moonCenter, moonRadius - moonRadiusAdjust, playerTex, arrowTex, playerSize, delta, config.mode);
+				DrawPlayer(&players[i], moonCenter, moonRadius - moonRadiusAdjust, playerTex, arrowTex, playerSize, delta, config.mode, soundEffects);
 			}
 
 			// Draw Snowballs
@@ -301,6 +316,10 @@ void GameLoop() {
 	UnloadTexture(spaceTex);
 	UnloadTexture(arrowTex);
 	UnloadMusicStream(track);
+
+	for (int i = 0; i < NUM_SOUNDS; i++) {
+		UnloadSound(soundEffects[i]);
+	}
 }
 
 /// <summary>
@@ -401,4 +420,88 @@ const char* GetPathFromMusic(MusicTrack track) {
 	case MUS_ESKIMO:
 		return "Music/Eskimo Zone.mp3";
 	}
+}
+
+/// <summary>
+/// Load in the sound effects array
+/// </summary>
+/// <param name="sounds:">
+/// Array to load sounds into
+/// </param>
+/// <returns>
+/// 0 is successful, -1 if an error occured
+/// </returns>
+int LoadSoundEffects(Sound* sounds) {
+
+	sounds[SND_CONFIRM] = LoadSound("Data/Confirm.wav");
+
+	if (sounds[SND_CONFIRM].stream.buffer == NULL) {
+		ErrorTrap(ERROR_LOADING, "Could not load Confirm.wav");
+		return -1;
+	}
+
+	sounds[SND_SCROLL] = LoadSound("Data/Scroll.wav");
+
+	if (sounds[SND_SCROLL].stream.buffer == NULL) {
+		ErrorTrap(ERROR_LOADING, "Could not load Scroll.wav");
+		return -1;
+	}
+
+	sounds[SND_STEP0] = LoadSound("Data/Step0.wav");
+
+	if (sounds[SND_STEP0].stream.buffer == NULL) {
+		ErrorTrap(ERROR_LOADING, "Could not load Step0.wav");
+		return -1;
+	}
+
+	sounds[SND_STEP1] = LoadSound("Data/Step1.wav");
+
+	if (sounds[SND_STEP1].stream.buffer == NULL) {
+		ErrorTrap(ERROR_LOADING, "Could not load Step1.wav");
+		return -1;
+	}
+
+	sounds[SND_STEP2] = LoadSound("Data/Step2.wav");
+
+	if (sounds[SND_STEP2].stream.buffer == NULL) {
+		ErrorTrap(ERROR_LOADING, "Could not load Step2.wav");
+		return -1;
+	}
+
+	sounds[SND_STEP3] = LoadSound("Data/Step3.wav");
+
+	if (sounds[SND_STEP3].stream.buffer == NULL) {
+		ErrorTrap(ERROR_LOADING, "Could not load Step3.wav");
+		return -1;
+	}
+
+	sounds[SND_HIT] = LoadSound("Data/Hit.wav");
+
+	if (sounds[SND_HIT].stream.buffer == NULL) {
+		ErrorTrap(ERROR_LOADING, "Could not load Hit.wav");
+		return -1;
+	}
+
+	sounds[SND_THROW] = LoadSound("Data/Throw.wav");
+
+	if (sounds[SND_THROW].stream.buffer == NULL) {
+		ErrorTrap(ERROR_LOADING, "Could not load Throw.wav");
+		return -1;
+	}
+
+	sounds[SND_THUD] = LoadSound("Data/Thud.wav");
+
+	if (sounds[SND_THUD].stream.buffer == NULL) {
+		ErrorTrap(ERROR_LOADING, "Could not load Thud.wav");
+		return -1;
+	}
+
+	sounds[SND_FORM] = LoadSound("Data/Form.wav");
+
+	if (sounds[SND_FORM].stream.buffer == NULL) {
+		ErrorTrap(ERROR_LOADING, "Could not load Form.wav");
+		return -1;
+	}
+
+	return 0;
 }

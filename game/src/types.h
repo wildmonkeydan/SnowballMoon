@@ -156,3 +156,19 @@ typedef enum MusicTrack {
 	MUS_ESKIMO,
 	MUS_ARTIC
 }MusicTrack;
+
+/// <summary>
+/// Enum for sound effects in the game
+/// </summary>
+typedef enum SoundEffect {
+	SND_SCROLL,
+	SND_CONFIRM,
+	SND_STEP0,
+	SND_STEP1,
+	SND_STEP2,
+	SND_STEP3,
+	SND_HIT,
+	SND_THROW,
+	SND_THUD,
+	SND_FORM
+};

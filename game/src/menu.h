@@ -45,7 +45,10 @@ typedef struct MusicMetadata {
 /// <param name="spaceTex:">
 /// Repeating texture for the space background
 /// </param>
+/// <param name="sounds:">
+/// Array of sound effects
+/// </param>
 /// <returns>
 /// Configuration for the game
 /// </returns>
-MenuConfig MenuLoop(Texture2D playerTex, Texture2D spaceTex);
+MenuConfig MenuLoop(Texture2D playerTex, Texture2D spaceTex, Sound* sounds);
