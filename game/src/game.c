@@ -88,6 +88,7 @@ void GameLoop() {
 	// Music vars
 	Music track = LoadMusicStream(GetPathFromMusic(config.chosenTrack));
 	PlayMusicStream(track);
+	bool musicOn = true;
 
 	// Snowball vars
 	Snowball snowballs[MAX_SNOWBALLS];
@@ -133,6 +134,10 @@ void GameLoop() {
 		float delta = GetFrameTime();
 		timer += delta;
 
+		if (IsKeyPressed(KEY_F1)) { // Toggle music
+			musicOn = !musicOn;
+		}
+
 		if (!gameEnd) {
 			// Update Players
 			for (int i = 0; i < config.numPlayers; i++) {
@@ -160,7 +165,9 @@ void GameLoop() {
 				}
 			}
 
-			UpdateMusicStream(track);
+			if (musicOn) {
+				UpdateMusicStream(track);
+			}
 
 			BeginDrawing();
 
