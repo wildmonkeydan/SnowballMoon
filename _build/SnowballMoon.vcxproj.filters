@@ -80,5 +80,13 @@
     <ClInclude Include="..\game\src\particle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="SnowballMoon.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon1.ico" />
+    <Image Include="..\resources\Icon.ico" />
   </ItemGroup>
 </Project>
