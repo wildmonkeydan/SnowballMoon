@@ -252,6 +252,9 @@ void GameLoop() {
 				for (int i = 0; i < MAX_SNOWBALLS; i++) {
 					snowballs[i].active = false;
 				}
+
+				CreateFort(&forts[0], config.modeParams[1], RED, 0, (Vector2) { moonCenter.x - playerSize, (moonCenter.y - moonRadius) - playerSize * 1.75f }, playerSize * 2, false);
+				CreateFort(&forts[1], config.modeParams[1], BLUE, 1, (Vector2) { moonCenter.x - playerSize, (moonCenter.y + moonRadius) - playerSize * 0.25f }, playerSize * 2, true);
 			}
 
 			UpdateMusicStream(track);
