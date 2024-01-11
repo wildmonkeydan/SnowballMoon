@@ -86,7 +86,6 @@
     <ResourceCompile Include="SnowballMoon.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="icon1.ico" />
     <Image Include="..\resources\Icon.ico" />
   </ItemGroup>
 </Project>

@@ -6,7 +6,7 @@ Animation playerIdle = { 6, 3, 2 };
 Animation playerRun = { 30, 14, 0 };
 Animation playerCrouch = { 24, 8, 1 };
 Animation playerThrow = { 24, 21, 3 };
-Animation playerHitFront = { 24, 18, 4 };
+Animation playerHitFront = { 24, 17, 4 };
 Animation playerPickup = { 12, 13, 5 };
 Animation fortFlag = { 15, 6, 6 };
 

@@ -99,7 +99,7 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D spaceTex, Sound* sounds) {
 						Color mix = ColorBrightness(change, -0.5f);
 						mix = (Color){ 0, change.r, change.g, change.b };
 
-						JslSetLightColour(i, ColorToInt(mix));
+						JslSetLightColour(blocks[i].playstationControllerId, ColorToInt(mix));
 					}
 				}
 			}
