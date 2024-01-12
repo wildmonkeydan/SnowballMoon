@@ -15,6 +15,7 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D spaceTex, Sound* sounds) {
 	void DrawMusicChoice(MusicMetadata* meta, MusicTrack track, int fontSize);
 	void DrawInstructions(int fontSize);
 	void DrawGameModeInstructions(int fontSize);
+	void DrawHowToPlay(int fontSize, Texture2D howTo);
 
 	MenuConfig config = { 0 };
 	config.numPlayers = 1;
@@ -44,6 +45,22 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D spaceTex, Sound* sounds) {
 
 	Texture2D logoTex = LoadTexture("Data/Logo.png");
 	SetTextureFilter(logoTex, TEXTURE_FILTER_TRILINEAR);
+	
+	if (logoTex.id == NULL) {
+		ErrorTrap(ERROR_LOADING, "Could not load Logo.png");
+		config.numPlayers = -1;
+		return config;
+	}
+
+	Texture2D howToTex = LoadTexture("Data/HowTo.png");
+	SetTextureFilter(howToTex, TEXTURE_FILTER_TRILINEAR);
+
+	if (howToTex.id == NULL) {
+		UnloadTexture(logoTex);
+		ErrorTrap(ERROR_LOADING, "Could not load HowTo.png");
+		config.numPlayers = -1;
+		return config;
+	}
 
 	Music lobbyMus = LoadMusicStream("Music/Lobby.mp3");
 	PlayMusicStream(lobbyMus);
@@ -51,11 +68,7 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D spaceTex, Sound* sounds) {
 	MusicTrack musChoice = MUS_DIAMOND;
 	MusicMetadata musMeta = { 0 };
 
-	if (logoTex.id == NULL) {
-		ErrorTrap(ERROR_LOADING, "Could not load Logo.png");
-		config.numPlayers = -1;
-		return config;
-	}
+	
 
 	int numPlaystation = JslConnectDevices();
 	TraceLog(LOG_INFO, "Num Playstation Controllers: %d", numPlaystation);
@@ -188,6 +201,10 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D spaceTex, Sound* sounds) {
 		}
 		DrawGameModeInstructions(fontSize);
 
+		if (IsKeyDown(KEY_SPACE)) {
+			DrawHowToPlay(fontSize, howToTex);
+		}
+
 		// Draw Player Selection
 		for (int i = 0; i < config.numPlayers; i++) {
 			if (blocks[i].active) {
@@ -233,6 +250,7 @@ MenuConfig MenuLoop(Texture2D playerTex, Texture2D spaceTex, Sound* sounds) {
 	}
 
 	UnloadTexture(logoTex);
+	UnloadTexture(howToTex);
 	UnloadMusicStream(lobbyMus);
 
 	if (closingWindow) {
@@ -498,4 +516,25 @@ void DrawInstructions(int fontSize) {
 void DrawGameModeInstructions(int fontSize) {
 	DrawText("Use PgUp/PgDown to change score limit, Numpad +/- to change the timer", fontSize, fontSize, fontSize, RAYWHITE);
 	DrawText("Use the Number Keys to change the game mode", fontSize, (fontSize * 2) + (fontSize / 4), fontSize, RAYWHITE);
+	DrawText("Hold the spacebar to see HOW TO PLAY", fontSize, (fontSize * 4), fontSize, RAYWHITE);
+}
+
+/// <summary>
+/// Draw instructions on how to play the game
+/// </summary>
+/// <param name="fontSize:">
+/// Size in screen space for fonts
+/// </param>
+/// <param name="howTo:">
+/// Texture which shows how to play
+/// </param>
+void DrawHowToPlay(int fontSize, Texture2D howTo) {
+	DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), BLACK);
+
+	DrawText("HOW TO PLAY", (GetScreenWidth() / 2.f) - ((fontSize * 2) * 4), fontSize, fontSize * 2, RAYWHITE);
+
+	DrawTexturePro(howTo, 
+		(Rectangle) { 0, 0, howTo.width, howTo.height},
+		(Rectangle) { (GetScreenWidth() / 2.f) - 750, fontSize * 4, GetScreenHeight() * 1.35f, GetScreenHeight() * 0.9f  },
+		(Vector2) { 0, 0 }, 0.f, RAYWHITE);
 }
